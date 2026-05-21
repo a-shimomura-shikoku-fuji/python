@@ -54,7 +54,7 @@ class MyWindow(QMainWindow):
         # 4. UIオブジェクトの保持とイベントシグナルの連携
         self.ui = loaded_ui
 
-        # 「前へ」ボタン (pushButton_2) のイベント連携（重複接続防止のため一度切断）
+        # 「前へ」ボタン (pushButton_2) のイベント連携
         if hasattr(self.ui, "pushButton_2"):
             try:
                 self.ui.pushButton_2.clicked.disconnect()
@@ -62,7 +62,7 @@ class MyWindow(QMainWindow):
                 pass
             self.ui.pushButton_2.clicked.connect(self.on_prevButton_click)
 
-        # 「次へ」ボタン (pushButton_3) のイベント連携（重複接続防止のため一度切断）
+        # 「次へ」ボタン (pushButton_3) のイベント連携
         if hasattr(self.ui, "pushButton_3"):
             try:
                 self.ui.pushButton_3.clicked.disconnect()
@@ -70,10 +70,26 @@ class MyWindow(QMainWindow):
                 pass
             self.ui.pushButton_3.clicked.connect(self.on_nextButton_click)
 
-        # 画面起動時の初期化処理
-        self.init_ui()              # 日付コントロールの初期化
+        # 「照会」ボタン (pushButton_9) のイベント連携
+        if hasattr(self.ui, "pushButton_9"):
+            try:
+                self.ui.pushButton_9.clicked.disconnect()
+            except Exception:
+                pass
+            self.ui.pushButton_9.clicked.connect(self.load_initial_data)
+
+        # 「クリア」ボタン (pushButton_10) のイベント連携
+        if hasattr(self.ui, "pushButton_10"):
+            try:
+                self.ui.pushButton_10.clicked.disconnect()
+            except Exception:
+                pass
+            self.ui.pushButton_10.clicked.connect(self.clear_ui)
+
+        # 5. 画面起動時の各種レイアウトの初期化
+        self.init_ui()              # 日付コントロールの初期値設定
         self.init_table_design()    # テーブルレイアウトの初期化
-        self.load_initial_data()    # データベースからのデータ自動読み込み
+        self.clear_ui()             # 【★修正】起動時に一度クリアを呼んでlabel_Countを含め初期化
 
     def init_ui(self):
         """検索条件の日付入力欄（QDateEdit）に初期値を設定する"""
@@ -98,7 +114,7 @@ class MyWindow(QMainWindow):
         table = self.ui.tableWidget
         table.setColumnCount(4)
 
-        # ヘッダーラベルの設定（2段組レイアウトを想定）
+        # ヘッダーラベルの設定
         headers = [
             "受注番号",
             "商品名 / サイズ",
@@ -120,10 +136,27 @@ class MyWindow(QMainWindow):
         print("【ログ】テーブルのデザイン適用が完了しました。")
 
     def load_initial_data(self):
-        """画面起動時にデータベースから条件に該当する全件を取得し、1件目を表示する"""
-        print("【ログ】初期データの読み込みを開始します。")
+        """【照会ボタン押下時】データベースから条件に該当するデータを取得して表示する"""
+        print("【ログ】データの読み込みを開始します。")
 
-        # 受注データおよび明細データを結合取得するSQL（SQLite/SQL Server等のプレースホルダ形式）
+        # 【★新規追加】テキスト入力欄（注番・担当者名）からの値取得処理
+        tyuban_val = ""
+        if hasattr(self.ui, "text_tyuban"):
+            # QLineEditならtext()、QTextEditならtoPlainText()で安全に取得
+            if hasattr(self.ui.text_tyuban, "text"):
+                tyuban_val = self.ui.text_tyuban.text().strip()
+            elif hasattr(self.ui.text_tyuban, "toPlainText"):
+                tyuban_val = self.ui.text_tyuban.toPlainText().strip()
+
+        tanname_val = ""
+        if hasattr(self.ui, "text_tanname"):
+            if hasattr(self.ui.text_tanname, "text"):
+                tanname_val = self.ui.text_tanname.text().strip()
+            elif hasattr(self.ui.text_tanname, "toPlainText"):
+                tanname_val = self.ui.text_tanname.toPlainText().strip()
+
+        # 受注データおよび明細データを結合取得するSQL
+        # 【★修正】JUM_TYUBAN と TAN_NAME の部分一致（LIKE）条件を追加
         sql = """
         SELECT
             JUH_DENDAT,
@@ -147,15 +180,19 @@ class MyWindow(QMainWindow):
             ON JUH_TANCD = TAN_CODE
         WHERE JUH_NOUKI BETWEEN ? AND ?
         AND JUH_DENDAT BETWEEN ? AND ?    
+        AND (? = '' OR JUM_TYUBAN LIKE ?)
+        AND (? = '' OR TAN_NAME LIKE ?)
         ORDER BY JUH_DENDAT, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD
         """
 
-        # SQLパラメータのリスト作成（SQL内の「?」に順番にマッピングされます）
+        # SQLパラメータのリスト作成（部分一致用に「%」で囲む）
         sql_params = [
             self.ui.date_Nouki_F.date().toString("yyyy-MM-dd"),
             self.ui.date_Nouki_T.date().toString("yyyy-MM-dd"),
             self.ui.date_Dendat_F.date().toString("yyyy-MM-dd"),
-            self.ui.date_Dendat_T.date().toString("yyyy-MM-dd")
+            self.ui.date_Dendat_T.date().toString("yyyy-MM-dd"),
+            tyuban_val, f"%{tyuban_val}%",    # 注番用の判定値とLIKE検索値
+            tanname_val, f"%{tanname_val}%"   # 担当者名用の判定値とLIKE検索値
         ]
 
         try:
@@ -167,7 +204,7 @@ class MyWindow(QMainWindow):
             # データが存在しない場合の処理
             if self.all_details_df.empty:
                 QMessageBox.information(self, "確認", "該当するデータは見つかりませんでした。")
-                self.all_details_df = None
+                self.clear_ui()  # 既存のデータを画面から綺麗にする
                 return
 
             # 伝票（グループ）の単位となる主キーを設定
@@ -197,7 +234,53 @@ class MyWindow(QMainWindow):
                 "エラー",
                 f"データベース処理中にエラーが発生しました:\n{str(e)}",
             )
-            self.all_details_df = None
+            self.clear_ui()
+
+    def clear_ui(self):
+        """【クリアボタン押下時】画面を初期起動時の状態に戻し、表示データをすべて削除する"""
+        print("【ログ】画面上のデータをクリアします。")
+        
+        # 1. 内部保持データの初期化
+        self.current_group_idx = -1
+        self.grouped_keys = []
+        self.all_details_df = None
+
+        # 2. 上部ヘッダーのテキストラベルを空文字に（label_Countもここに含まれます）
+        labels_to_clear = ["label_dendat", "label_tyuban", "label_nouki", "label_toknm1", "label_tanname", "label_Count"]
+        for label_name in labels_to_clear:
+            if hasattr(self.ui, label_name):
+                getattr(self.ui, label_name).setText("")
+
+        # 【★新規追加】検索用入力テキスト（text_tyuban / text_tanname）もクリアする
+        inputs_to_clear = ["text_tyuban", "text_tanname"]
+        for input_name in inputs_to_clear:
+            if hasattr(self.ui, input_name):
+                target = getattr(self.ui, input_name)
+                if hasattr(target, "clear"):
+                    target.clear()
+
+        # 3. テーブル明細行の初期化
+        if hasattr(self.ui, "tableWidget"):
+            table = self.ui.tableWidget
+            table.setRowCount(0)
+            
+            # 再びヘッダー2行のみを構築し直す
+            table.setRowCount(2)
+            table.setItem(0, 0, create_cell_item_helper("受注番号", is_header=True))
+            table.setItem(0, 1, create_cell_item_helper("商品名", is_header=True))
+            table.setItem(0, 2, create_cell_item_helper("数量明細", is_header=True))
+            table.setItem(0, 3, create_cell_item_helper("単価", is_header=True))
+            table.setItem(1, 0, create_cell_item_helper("", is_header=True))
+            table.setItem(1, 1, create_cell_item_helper("サイズ", is_header=True))
+            table.setItem(1, 2, create_cell_item_helper("客先仕様書No", is_header=True))
+            table.setItem(1, 3, create_cell_item_helper("備考", is_header=True))
+            table.setSpan(0, 0, 2, 1)
+            table.setRowHeight(0, 20)
+            table.setRowHeight(1, 20)
+            table.viewport().update()
+
+        # 4. 日付入力欄を起動時のデフォルトにリセット
+        self.init_ui()
 
     def on_nextButton_click(self):
         """「次へ」ボタン押下時、インデックスを1つ進めて次の伝票を表示する"""
@@ -206,9 +289,8 @@ class MyWindow(QMainWindow):
 
         self.current_group_idx += 1
 
-        # 最後のデータを超えたら、最初のデータ（インデックス0）に戻る
+        # 最後のデータを超えたら、最初のデータに戻る
         if self.current_group_idx >= len(self.grouped_keys):
-            QMessageBox.information(self, "確認", "最後のデータです。最初のデータに戻ります。")
             self.current_group_idx = 0
 
         self._display_current_group()
@@ -220,9 +302,8 @@ class MyWindow(QMainWindow):
 
         self.current_group_idx -= 1
 
-        # 最初のデータを下回ったら、最後のデータ（末尾のインデックス）に移動する
+        # 最初のデータを下回ったら、最後のデータに移動する
         if self.current_group_idx < 0:
-            QMessageBox.information(self, "確認", "最初のデータです。最後のデータに移動します。")
             self.current_group_idx = len(self.grouped_keys) - 1
 
         self._display_current_group()
@@ -232,11 +313,17 @@ class MyWindow(QMainWindow):
         if not self.grouped_keys or self.all_details_df is None:
             return
 
+        # label_Count に進捗を表示
+        if hasattr(self.ui, "label_Count"):
+            total_count = len(self.grouped_keys)
+            current_num = self.current_group_idx + 1
+            self.ui.label_Count.setText(f"{current_num} / {total_count} 件")
+
         # 現在のグループキー情報を展開
         current_key = self.grouped_keys[self.current_group_idx]
         key_dendat, key_tyuban, key_nouki, key_toknm1, key_tancd = current_key
 
-        # 全明細から、現在のグループキーに完全一致する明細行だけをフィルタリング（NaN値の判定含む）
+        # 全明細から、現在のグループキーに完全一致する明細行だけをフィルタリング
         df_sub = self.all_details_df[
             (
                 (self.all_details_df["JUH_DENDAT"] == key_dendat)
@@ -275,7 +362,7 @@ class MyWindow(QMainWindow):
             except Exception:
                 return str(val)
 
-        # 画面上部等のヘッダーテキストラベルへのマッピングマッピング
+        # 各ラベルへのマッピング
         mapping = {
             "label_dendat": format_to_date(key_dendat),
             "label_tyuban": str(key_tyuban) if pd.notna(key_tyuban) else "",
@@ -292,77 +379,39 @@ class MyWindow(QMainWindow):
         if hasattr(self.ui, "tableWidget"):
             table = self.ui.tableWidget
             table.setRowCount(0)
-            # ヘッダー2行 ＋ (明細データ数 × 上下2行構成) の行数を確保
             table.setRowCount(2 + (len(df_sub) * 2))
 
-            def create_cell_item(val, is_numeric=False, align_center=False, is_header=False):
-                """QTableWidgetItem を生成・装飾する内部共通関数"""
-                text = str(val) if pd.notna(val) else ""
-                if is_numeric:
-                    try:
-                        num_val = float(val) if pd.notna(val) else 0.0
-                        text = f"{int(num_val):,}"  # カンマ区切り整数フォーマット
-                    except (ValueError, TypeError):
-                        text = "0" if text == "" else text
-
-                item = QTableWidgetItem(text)
-                # セルをダブルクリック等で編集できないように読み取り専用フラグを設定
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-
-                # ヘッダー行用のスタイル設定（薄い青の背景、濃い青の文字）
-                if is_header:
-                    item.setBackground(QColor("#eff6ff"))
-                    item.setForeground(QColor("#1e40af"))
-
-                # 配置（アライメント）の決定
-                if align_center or is_header:
-                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                elif is_numeric:
-                    item.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-                else:
-                    item.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-                return item
-
-            # --- 0行目（上段ヘッダー定義） ---
-            table.setItem(0, 0, create_cell_item("受注番号", is_header=True))
-            table.setItem(0, 1, create_cell_item("商品名", is_header=True))
-            table.setItem(0, 2, create_cell_item("数量明細", is_header=True))
-            table.setItem(0, 3, create_cell_item("単価", is_header=True))
-
-            # --- 1行目（下段ヘッダー定義） ---
-            table.setItem(1, 0, create_cell_item("", is_header=True))
-            table.setItem(1, 1, create_cell_item("サイズ", is_header=True))
-            table.setItem(1, 2, create_cell_item("客先仕様書No", is_header=True))
-            table.setItem(1, 3, create_cell_item("備考", is_header=True))
-
-            # 「受注番号」ヘッダーの上下結合（0行目から2行分、1列分を結合）
+            # 上段・下段ヘッダーを設置
+            table.setItem(0, 0, create_cell_item_helper("受注番号", is_header=True))
+            table.setItem(0, 1, create_cell_item_helper("商品名", is_header=True))
+            table.setItem(0, 2, create_cell_item_helper("数量明細", is_header=True))
+            table.setItem(0, 3, create_cell_item_helper("単価", is_header=True))
+            table.setItem(1, 0, create_cell_item_helper("", is_header=True))
+            table.setItem(1, 1, create_cell_item_helper("サイズ", is_header=True))
+            table.setItem(1, 2, create_cell_item_helper("客先仕様書No", is_header=True))
+            table.setItem(1, 3, create_cell_item_helper("備考", is_header=True))
             table.setSpan(0, 0, 2, 1)
             table.setRowHeight(0, 20)
             table.setRowHeight(1, 20)
 
-            # --- 2行目以降（明細データ行）のループ展開 ---
+            # 各明細データのループ挿入
             for i in range(len(df_sub)):
                 row = df_sub.iloc[i]
                 top_row_idx = 2 + (i * 2)
                 bottom_row_idx = top_row_idx + 1
 
-                # 左端：受注番号のセル配置（上下結合）
-                table.setItem(top_row_idx, 0, create_cell_item(row["JUH_JUHNO"], align_center=True))
+                table.setItem(top_row_idx, 0, create_cell_item_helper(row["JUH_JUHNO"], align_center=True))
                 table.setItem(bottom_row_idx, 0, QTableWidgetItem(""))
 
-                # 2列目：商品名（上段） / サイズ（下段）
-                table.setItem(top_row_idx, 1, create_cell_item(row["JUM_SHONM"]))
-                table.setItem(bottom_row_idx, 1, create_cell_item(row["JUM_KIKAKU"]))
+                table.setItem(top_row_idx, 1, create_cell_item_helper(row["JUM_SHONM"]))
+                table.setItem(bottom_row_idx, 1, create_cell_item_helper(row["JUM_KIKAKU"]))
 
-                # 3列目：数量明細（上段） / 客先仕様書No（下段）
-                table.setItem(top_row_idx, 2, create_cell_item(row["JUM_SURYOMEI"]))
-                table.setItem(bottom_row_idx, 2, create_cell_item(row["JUM_CUSTSYNO"]))
+                table.setItem(top_row_idx, 2, create_cell_item_helper(row["JUM_SURYOMEI"]))
+                table.setItem(bottom_row_idx, 2, create_cell_item_helper(row["JUM_CUSTSYNO"]))
 
-                # 4列目：単価（上段・数値） / 備考（下段）
-                table.setItem(top_row_idx, 3, create_cell_item(row["JUM_URITAN"], is_numeric=True))
-                table.setItem(bottom_row_idx, 3, create_cell_item(row["JUM_BIKOU1"]))
+                table.setItem(top_row_idx, 3, create_cell_item_helper(row["JUM_URITAN"], is_numeric=True))
+                table.setItem(bottom_row_idx, 3, create_cell_item_helper(row["JUM_BIKOU1"]))
 
-                # 明細内の「受注番号」セルの上下結合と行高の設定
                 table.setSpan(top_row_idx, 0, 2, 1)
                 table.setRowHeight(top_row_idx, 20)
                 table.setRowHeight(bottom_row_idx, 20)
@@ -379,6 +428,32 @@ class MyWindow(QMainWindow):
         event.accept()
 
 
+def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header=False):
+    """QTableWidgetItem を生成・装飾する共通ヘルパー関数"""
+    text = str(val) if pd.notna(val) else ""
+    if is_numeric:
+        try:
+            num_val = float(val) if pd.notna(val) else 0.0
+            text = f"{int(num_val):,}"
+        except (ValueError, TypeError):
+            text = "0" if text == "" else text
+
+    item = QTableWidgetItem(text)
+    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+
+    if is_header:
+        item.setBackground(QColor("#eff6ff"))
+        item.setForeground(QColor("#1e40af"))
+
+    if align_center or is_header:
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    elif is_numeric:
+        item.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+    else:
+        item.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+    return item
+
+
 def show_window(parent_root):
     """外部（Tkinter側など）からこのPySide6ウィンドウを呼び出すためのエントリー関数"""
     app = QApplication.instance()
@@ -391,7 +466,6 @@ def show_window(parent_root):
 
 
 if __name__ == "__main__":
-    # 単体起動テスト用処理
     app = QApplication(sys.argv)
     window = MyWindow()
     window.show()
