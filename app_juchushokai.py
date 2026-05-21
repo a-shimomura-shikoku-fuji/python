@@ -18,43 +18,36 @@ from PySide6.QtWidgets import (
 )
 
 
-class MyWindow(QMainWindow):
-    """受注照会システム メインウィンドウクラス"""
+class MyWindow:
+    """受注照会システム メインウィンドウ管理クラス"""
 
-    def __init__(self, parent_root=None):
+    def __init__(self, parent_root=None, parent_menu=None):
         super().__init__()
         self.parent_root = parent_root
+        self.parent_menu = parent_menu  # メニューのインスタンスを保持
 
         # --- 伝票めくり（ページング）機能用の変数初期化 ---
         self.current_group_idx = -1  # 現在表示中のグループインデックス
-        self.grouped_keys = []        # グループ化された主キーのリスト
+        self.grouped_keys = []        # グループ化された主キー the リスト
         self.all_details_df = None   # DBから取得した全明細データを保持するデータフレーム
 
         # 1. UIファイルの読み込み設定
         current_dir = os.path.dirname(os.path.abspath(__file__))
         ui_path = os.path.join(current_dir, "app_juchushokai.ui")
         loader = QUiLoader()
-        loaded_ui = loader.load(ui_path)
+        
+        # 【★修正】引数にselfを渡さず、デザイナーの設定（外枠レイアウト）を完全に保持したUIオブジェクトを生成
+        self.ui = loader.load(ui_path)
 
-        # 2. メイン画面の構築とUI構造の移植
-        self.setCentralWidget(loaded_ui.centralWidget())
+        # 2. ウィンドウ外観（サイズ・タイトル・アイコン）の設定
+        self.ui.setWindowTitle(self.ui.windowTitle())
+        self.ui.setWindowIcon(QIcon("my_logo.ico"))
+        self.ui.setFixedSize(self.ui.size()) 
 
-        # UIファイルに設定されたスタイルシート（背景色・フォント等）をウィンドウ全体に適用
-        self.setStyleSheet(loaded_ui.styleSheet())
+        # クローズイベントをフックするための特殊処理を設定
+        self.ui.closeEvent = self.closeEvent
 
-        if hasattr(loaded_ui, "menuBar") and loaded_ui.menuBar():
-            self.setMenuBar(loaded_ui.menuBar())
-        if hasattr(loaded_ui, "statusBar") and loaded_ui.statusBar():
-            self.setStatusBar(loaded_ui.statusBar())
-
-        # 3. ウィンドウ外観（サイズ・タイトル・アイコン）の設定
-        self.resize(loaded_ui.size())
-        self.setWindowTitle(loaded_ui.windowTitle())
-        self.setWindowIcon(QIcon("my_logo.ico"))
-
-        # 4. UIオブジェクトの保持とイベントシグナルの連携
-        self.ui = loaded_ui
-
+        # 3. イベントシグナルの連携
         # 「前へ」ボタン (pushButton_2) のイベント連携
         if hasattr(self.ui, "pushButton_2"):
             try:
@@ -87,10 +80,18 @@ class MyWindow(QMainWindow):
                 pass
             self.ui.pushButton_10.clicked.connect(self.clear_ui)
 
-        # 5. 画面起動時の各種レイアウトの初期化
+        # 4. 画面起動時の各種レイアウトの初期化
         self.init_ui()              # 日付コントロールの初期値設定
         self.init_table_design()    # テーブルレイアウトの初期化
-        self.clear_ui()             # 【★修正】起動時に一度クリアを呼んでlabel_Countを含め初期化
+        self.clear_ui()             # 起動時に一度クリアを呼んで初期化
+
+         # 【★追加推奨】戻るボタン(btn_back)があれば、画面を閉じる処理を紐付けます
+        if hasattr(self.ui, "btn_back"):
+            self.ui.btn_back.clicked.connect(self.close)
+
+    def show(self):
+        """ウィンドウを表示するメソッド"""
+        self.ui.show()
 
     def init_ui(self):
         """検索条件の初期化とチェックボックスの連動設定"""
@@ -100,7 +101,6 @@ class MyWindow(QMainWindow):
         date_Dendat_T = self.ui.date_Dendat_T
 
         # スタイルシートで「無効時（:disabled）」の文字色をかなり薄いグレー（#bbbbbb）に指定
-        # 有効時は通常の黒（black）になります
         disabled_style = """
             QDateEdit { color: black; }
             QDateEdit:disabled { color: #bbbbbb; }
@@ -164,10 +164,8 @@ class MyWindow(QMainWindow):
         """【照会ボタン押下時】データベースから条件に該当するデータを取得して表示する"""
         print("【ログ】データの読み込みを開始します。")
 
-        # 【★新規追加】テキスト入力欄（注番・担当者名）からの値取得処理
         tyuban_val = ""
         if hasattr(self.ui, "text_tyuban"):
-            # QLineEditならtext()、QTextEditならtoPlainText()で安全に取得
             if hasattr(self.ui.text_tyuban, "text"):
                 tyuban_val = self.ui.text_tyuban.text().strip()
             elif hasattr(self.ui.text_tyuban, "toPlainText"):
@@ -180,8 +178,6 @@ class MyWindow(QMainWindow):
             elif hasattr(self.ui.text_tanname, "toPlainText"):
                 tanname_val = self.ui.text_tanname.toPlainText().strip()
 
-        # 受注データおよび明細データを結合取得するSQL
-        # 【★修正】JUM_TYUBAN と TAN_NAME の部分一致（LIKE）条件を追加
         sql = """
         SELECT
             JUH_DENDAT,
@@ -205,38 +201,34 @@ class MyWindow(QMainWindow):
             ON JUH_TANCD = TAN_CODE
         WHERE (? = '' OR JUH_NOUKI BETWEEN ? AND ?)
         AND (? = '' OR JUH_DENDAT BETWEEN ? AND ?)    
-        AND (? = '' OR JUH_CHUBAN LIKE ?)
+        AND (? = '' OR JUM_TYUBAN LIKE ?)
         AND (? = '' OR TAN_NAME LIKE ?)
         ORDER BY JUH_DENDAT, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD
         """
-        # チェックボックスがONなら日付文字列、OFFなら空文字（条件無視）にする
         nouki_f_val = self.ui.date_Nouki_F.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
         nouki_t_val = self.ui.date_Nouki_T.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
         
         dendat_f_val = self.ui.date_Dendat_F.date().toString("yyyy-MM-dd") if self.ui.chk_Dendat.isChecked() else ""
         dendat_t_val = self.ui.date_Dendat_T.date().toString("yyyy-MM-dd") if self.ui.chk_Dendat.isChecked() else ""
 
-        # SQLパラメータのリスト作成
         sql_params = [
-            nouki_f_val, nouki_f_val, nouki_t_val,     # 納期用
-            dendat_f_val, dendat_f_val, dendat_t_val,   # 受注日用
+            nouki_f_val, nouki_f_val, nouki_t_val,
+            dendat_f_val, dendat_f_val, dendat_t_val,
             tyuban_val, f"%{tyuban_val}%",
             tanname_val, f"%{tanname_val}%"
         ]
 
         try:
-            # データベース接続とデータ読込の実行
             conn = common_utils.get_db_connection()
             self.all_details_df = pd.read_sql(sql, conn, params=sql_params)
             conn.close()
 
-            # データが存在しない場合の処理
+            # 【★修正】QMessageBoxの親を self から self.ui に変更
             if self.all_details_df.empty:
-                QMessageBox.information(self, "確認", "該当するデータは見つかりませんでした。")
-                self.clear_ui()  # 既存のデータを画面から綺麗にする
+                QMessageBox.information(self.ui, "確認", "該当するデータは見つかりませんでした。")
+                self.clear_ui()
                 return
 
-            # 伝票（グループ）の単位となる主キーを設定
             group_keys = [
                 "JUH_DENDAT",
                 "JUM_TYUBAN",
@@ -244,22 +236,20 @@ class MyWindow(QMainWindow):
                 "JUH_TOKNM1",
                 "JUH_TANCD",
             ]
-            # 重複を排除してグループのリストを生成
             self.grouped_keys = list(
                 self.all_details_df[group_keys]
                 .drop_duplicates()
                 .itertuples(index=False, name=None)
             )
 
-            # 初期表示として最初のグループ（インデックス0）を指定
             self.current_group_idx = 0
-
             print(f"【ログ】全明細を取得しました。件数: {len(self.all_details_df)} / グループ数: {len(self.grouped_keys)}")
             self._display_current_group()
 
         except Exception as e:
+            # 【★修正】QMessageBoxの親を self から self.ui に変更
             QMessageBox.critical(
-                self,
+                self.ui,
                 "エラー",
                 f"データベース処理中にエラーが発生しました:\n{str(e)}",
             )
@@ -269,18 +259,15 @@ class MyWindow(QMainWindow):
         """【クリアボタン押下時】画面を初期起動時の状態に戻し、表示データをすべて削除する"""
         print("【ログ】画面上のデータをクリアします。")
         
-        # 1. 内部保持データの初期化
         self.current_group_idx = -1
         self.grouped_keys = []
         self.all_details_df = None
 
-        # 2. 上部ヘッダーのテキストラベルを空文字に（label_Countもここに含まれます）
         labels_to_clear = ["label_dendat", "label_tyuban", "label_nouki", "label_toknm1", "label_tanname", "label_Count"]
         for label_name in labels_to_clear:
             if hasattr(self.ui, label_name):
                 getattr(self.ui, label_name).setText("")
 
-        # 【★新規追加】検索用入力テキスト（text_tyuban / text_tanname）もクリアする
         inputs_to_clear = ["text_tyuban", "text_tanname"]
         for input_name in inputs_to_clear:
             if hasattr(self.ui, input_name):
@@ -288,12 +275,10 @@ class MyWindow(QMainWindow):
                 if hasattr(target, "clear"):
                     target.clear()
 
-        # 3. テーブル明細行の初期化
         if hasattr(self.ui, "tableWidget"):
             table = self.ui.tableWidget
             table.setRowCount(0)
             
-            # 再びヘッダー2行のみを構築し直す
             table.setRowCount(2)
             table.setItem(0, 0, create_cell_item_helper("受注番号", is_header=True))
             table.setItem(0, 1, create_cell_item_helper("商品名", is_header=True))
@@ -308,11 +293,9 @@ class MyWindow(QMainWindow):
             table.setRowHeight(1, 20)
             table.viewport().update()
 
-        # 4. 日付入力欄のチェックボックスを解除（受注日は指定なし・グレーアウトにする）
         self.ui.chk_Nouki.setChecked(True)
         self.ui.chk_Dendat.setChecked(False)
 
-        # 日付自体も初期値（直近1か月/本日）にリセット
         today = QDate.currentDate()
         self.ui.date_Nouki_F.setDate(today)
         self.ui.date_Nouki_T.setDate(today)
@@ -325,8 +308,6 @@ class MyWindow(QMainWindow):
             return
 
         self.current_group_idx += 1
-
-        # 最後のデータを超えたら、最初のデータに戻る
         if self.current_group_idx >= len(self.grouped_keys):
             self.current_group_idx = 0
 
@@ -338,8 +319,6 @@ class MyWindow(QMainWindow):
             return
 
         self.current_group_idx -= 1
-
-        # 最初のデータを下回ったら、最後のデータに移動する
         if self.current_group_idx < 0:
             self.current_group_idx = len(self.grouped_keys) - 1
 
@@ -350,17 +329,14 @@ class MyWindow(QMainWindow):
         if not self.grouped_keys or self.all_details_df is None:
             return
 
-        # label_Count に進捗を表示
         if hasattr(self.ui, "label_Count"):
             total_count = len(self.grouped_keys)
             current_num = self.current_group_idx + 1
             self.ui.label_Count.setText(f"{current_num} / {total_count} 件")
 
-        # 現在のグループキー情報を展開
         current_key = self.grouped_keys[self.current_group_idx]
         key_dendat, key_tyuban, key_nouki, key_toknm1, key_tancd = current_key
 
-        # 全明細から、現在のグループキーに完全一致する明細行だけをフィルタリング
         df_sub = self.all_details_df[
             (
                 (self.all_details_df["JUH_DENDAT"] == key_dendat)
@@ -390,7 +366,6 @@ class MyWindow(QMainWindow):
         first_row = df_sub.iloc[0].to_dict()
 
         def format_to_date(val):
-            """日付データを yyyy/mm/dd 形式の文字列にフォーマットする内部関数"""
             if pd.isna(val) or val == "":
                 return ""
             try:
@@ -399,7 +374,6 @@ class MyWindow(QMainWindow):
             except Exception:
                 return str(val)
 
-        # 各ラベルへのマッピング
         mapping = {
             "label_dendat": format_to_date(key_dendat),
             "label_tyuban": str(key_tyuban) if pd.notna(key_tyuban) else "",
@@ -412,13 +386,11 @@ class MyWindow(QMainWindow):
             if hasattr(self.ui, label_name):
                 getattr(self.ui, label_name).setText(val)
 
-        # --- テーブル Widget への明細描画処理 ---
         if hasattr(self.ui, "tableWidget"):
             table = self.ui.tableWidget
             table.setRowCount(0)
             table.setRowCount(2 + (len(df_sub) * 2))
 
-            # 上段・下段ヘッダーを設置
             table.setItem(0, 0, create_cell_item_helper("受注番号", is_header=True))
             table.setItem(0, 1, create_cell_item_helper("商品名", is_header=True))
             table.setItem(0, 2, create_cell_item_helper("数量明細", is_header=True))
@@ -431,7 +403,6 @@ class MyWindow(QMainWindow):
             table.setRowHeight(0, 20)
             table.setRowHeight(1, 20)
 
-            # 各明細データのループ挿入
             for i in range(len(df_sub)):
                 row = df_sub.iloc[i]
                 top_row_idx = 2 + (i * 2)
@@ -457,13 +428,15 @@ class MyWindow(QMainWindow):
 
         print(f"【ログ】表示中: {self.current_group_idx + 1} / {len(self.grouped_keys)} グループ目")
 
+      # 【★修正】クローズイベントを書き換えます
     def closeEvent(self, event):
-        """画面が閉じられたときに呼び出され、呼び出し元のTkinterメニュー画面を再表示する"""
-        if self.parent_root:
+        """画面が閉じられたときに呼び出され、メニュー画面を再表示する"""
+        if self.parent_menu:
+            self.parent_menu.show_menu() # 親のメニュー画面を表示
+        elif self.parent_root:
             self.parent_root.deiconify()
             self.parent_root.lift()
         event.accept()
-
 
 def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header=False):
     """QTableWidgetItem を生成・装飾する共通ヘルパー関数"""
@@ -482,7 +455,6 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
         item.setBackground(QColor("#eff6ff"))
         item.setForeground(QColor("#1e40af"))
         
-        # フォントオブジェクトを作成し、太字（Bold）に設定してセルに適用する
         font = QFont()
         font.setBold(True)
         item.setFont(font)
@@ -503,12 +475,12 @@ def show_window(parent_root):
         app = QApplication(sys.argv)
 
     window = MyWindow(parent_root)
-    window.show()
+    window.show()  # 新設したshowメソッドで表示
     app.exec()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyWindow()
-    window.show()
+    window.show()  # 新設したshowメソッドで表示
     sys.exit(app.exec())
