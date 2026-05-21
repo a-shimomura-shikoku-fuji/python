@@ -14,7 +14,8 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QTabWidget,
     QMessageBox,
-    QDateEdit
+    QDateEdit,
+    QPushButton
 )
 
 
@@ -28,7 +29,7 @@ class MyWindow:
 
         # --- 伝票めくり（ページング）機能用の変数初期化 ---
         self.current_group_idx = -1  # 現在表示中のグループインデックス
-        self.grouped_keys = []        # グループ化された主キー the リスト
+        self.grouped_keys = []        # グループ化された主キーのリスト
         self.all_details_df = None   # DBから取得した全明細データを保持するデータフレーム
 
         # 1. UIファイルの読み込み設定
@@ -36,7 +37,7 @@ class MyWindow:
         ui_path = os.path.join(current_dir, "app_juchushokai.ui")
         loader = QUiLoader()
         
-        # 【★修正】引数にselfを渡さず、デザイナーの設定（外枠レイアウト）を完全に保持したUIオブジェクトを生成
+        # デザイナーの設定（外枠レイアウト）を完全に保持したUIオブジェクトを生成
         self.ui = loader.load(ui_path)
 
         # 2. ウィンドウ外観（サイズ・タイトル・アイコン）の設定
@@ -44,50 +45,51 @@ class MyWindow:
         self.ui.setWindowIcon(QIcon("my_logo.ico"))
         self.ui.setFixedSize(self.ui.size()) 
 
-        # クローズイベントをフックするための特殊処理を設定
+        # 【★重要】クローズイベントをこのクラスの closeEvent メソッドに完全にフックする
         self.ui.closeEvent = self.closeEvent
 
         # 3. イベントシグナルの連携
-        # 「前へ」ボタン (pushButton_2) のイベント連携
         if hasattr(self.ui, "pushButton_2"):
-            try:
-                self.ui.pushButton_2.clicked.disconnect()
-            except Exception:
-                pass
+            try: self.ui.pushButton_2.clicked.disconnect()
+            except: pass
             self.ui.pushButton_2.clicked.connect(self.on_prevButton_click)
 
-        # 「次へ」ボタン (pushButton_3) のイベント連携
         if hasattr(self.ui, "pushButton_3"):
-            try:
-                self.ui.pushButton_3.clicked.disconnect()
-            except Exception:
-                pass
+            try: self.ui.pushButton_3.clicked.disconnect()
+            except: pass
             self.ui.pushButton_3.clicked.connect(self.on_nextButton_click)
 
-        # 「照会」ボタン (pushButton_9) のイベント連携
         if hasattr(self.ui, "pushButton_9"):
-            try:
-                self.ui.pushButton_9.clicked.disconnect()
-            except Exception:
-                pass
+            try: self.ui.pushButton_9.clicked.disconnect()
+            except: pass
             self.ui.pushButton_9.clicked.connect(self.load_initial_data)
 
-        # 「クリア」ボタン (pushButton_10) のイベント連携
         if hasattr(self.ui, "pushButton_10"):
-            try:
-                self.ui.pushButton_10.clicked.disconnect()
-            except Exception:
-                pass
+            try: self.ui.pushButton_10.clicked.disconnect()
+            except: pass
             self.ui.pushButton_10.clicked.connect(self.clear_ui)
 
-        # 4. 画面起動時の各種レイアウトの初期化
-        self.init_ui()              # 日付コントロールの初期値設定
-        self.init_table_design()    # テーブルレイアウトの初期化
-        self.clear_ui()             # 起動時に一度クリアを呼んで初期化
+        # 4. 日付・テーブル類の接続と、強制初期化
+        self.init_ui()              
+        self.init_table_design()    
+        self.clear_ui()             
 
-         # 【★追加推奨】戻るボタン(btn_back)があれば、画面を閉じる処理を紐付けます
+        # 【戻るボタン対策】
+        # UI内の「戻る」ボタンを全自動で探索して閉じるアクションを紐付け
+        self.bind_back_button()
+
+    def bind_back_button(self):
+        """UI内の戻るボタンを自動検知して閉じるアクションを紐付ける"""
         if hasattr(self.ui, "btn_back"):
-            self.ui.btn_back.clicked.connect(self.close)
+            self.ui.btn_back.clicked.connect(self.ui.close)
+            return
+
+        buttons = self.ui.findChildren(QPushButton)
+        for btn in buttons:
+            if btn.text() in ["戻る", "メニュー", "もどる", "Menu", "Back"]:
+                print(f"【ログ】戻るボタンを自動検知しました: {btn.objectName()} -> {btn.text()}")
+                btn.clicked.connect(self.ui.close)
+                return
 
     def show(self):
         """ウィンドウを表示するメソッド"""
@@ -95,40 +97,34 @@ class MyWindow:
 
     def init_ui(self):
         """検索条件の初期化とチェックボックスの連動設定"""
-        date_Nouki_F = self.ui.date_Nouki_F
-        date_Nouki_T = self.ui.date_Nouki_T
-        date_Dendat_F = self.ui.date_Dendat_F
-        date_Dendat_T = self.ui.date_Dendat_T
-
-        # スタイルシートで「無効時（:disabled）」の文字色をかなり薄いグレー（#bbbbbb）に指定
         disabled_style = """
             QDateEdit { color: black; }
-            QDateEdit:disabled { color: #bbbbbb; }
+            QDateEdit:disabled { color: #bbbbbb; background-color: #f1f5f9; }
         """
 
-        # 全ての日付コントロールの基本表示設定
-        for widget in [date_Nouki_F, date_Nouki_T, date_Dendat_F, date_Dendat_T]:
+        for widget in [self.ui.date_Nouki_F, self.ui.date_Nouki_T, self.ui.date_Dendat_F, self.ui.date_Dendat_T]:
             widget.setDisplayFormat("yyyy/MM/dd")
-            widget.setStyleSheet(disabled_style)  # 薄いグレーのスタイルを適用
-            try:
-                widget.dateChanged.disconnect()
-            except Exception:
-                pass
+            widget.setStyleSheet(disabled_style)
+            try: widget.dateChanged.disconnect()
+            except: pass
 
-        # 1. 初期日付の計算（本日、および1か月前）
         today = QDate.currentDate()
         one_month_ago = today.addMonths(-1)
 
-        date_Nouki_F.setDate(today)
-        date_Nouki_T.setDate(today)
-        date_Dendat_F.setDate(one_month_ago)
-        date_Dendat_T.setDate(today)
+        self.ui.date_Nouki_F.setDate(today)
+        self.ui.date_Nouki_T.setDate(today)
+        self.ui.date_Dendat_F.setDate(one_month_ago)
+        self.ui.date_Dendat_T.setDate(today)
 
-        # 2. チェックボックスの状態と日付欄の有効・無効（グレーアウト）を連動
-        self.ui.chk_Nouki.toggled.connect(date_Nouki_F.setEnabled)
-        self.ui.chk_Nouki.toggled.connect(date_Nouki_T.setEnabled)
-        self.ui.chk_Dendat.toggled.connect(date_Dendat_F.setEnabled)
-        self.ui.chk_Dendat.toggled.connect(date_Dendat_T.setEnabled)
+        try: self.ui.chk_Nouki.toggled.disconnect()
+        except: pass
+        try: self.ui.chk_Dendat.toggled.disconnect()
+        except: pass
+
+        self.ui.chk_Nouki.toggled.connect(self.ui.date_Nouki_F.setEnabled)
+        self.ui.chk_Nouki.toggled.connect(self.ui.date_Nouki_T.setEnabled)
+        self.ui.chk_Dendat.toggled.connect(self.ui.date_Dendat_F.setEnabled)
+        self.ui.chk_Dendat.toggled.connect(self.ui.date_Dendat_T.setEnabled)
 
     def init_table_design(self):
         """明細表示用テーブル（QTableWidget）の初期デザイン・列幅を設定する"""
@@ -139,7 +135,6 @@ class MyWindow:
         table = self.ui.tableWidget
         table.setColumnCount(4)
 
-        # ヘッダーラベルの設定
         headers = [
             "受注番号",
             "商品名 / サイズ",
@@ -148,13 +143,11 @@ class MyWindow:
         ]
         table.setHorizontalHeaderLabels(headers)
 
-        # 各列の幅を最適化
         table.setColumnWidth(0, 100)
         table.setColumnWidth(1, 180)
         table.setColumnWidth(2, 200)
         table.setColumnWidth(3, 130)
 
-        # 行番号（垂直ヘッダー）を非表示にする
         if hasattr(table, "verticalHeader"):
             table.verticalHeader().setVisible(False)
 
@@ -168,14 +161,14 @@ class MyWindow:
         if hasattr(self.ui, "text_tyuban"):
             if hasattr(self.ui.text_tyuban, "text"):
                 tyuban_val = self.ui.text_tyuban.text().strip()
-            elif hasattr(self.ui.text_tyuban, "toPlainText"):
+            elif hasattr(self.ui, "text_tyuban", "toPlainText"):
                 tyuban_val = self.ui.text_tyuban.toPlainText().strip()
 
         tanname_val = ""
         if hasattr(self.ui, "text_tanname"):
             if hasattr(self.ui.text_tanname, "text"):
                 tanname_val = self.ui.text_tanname.text().strip()
-            elif hasattr(self.ui.text_tanname, "toPlainText"):
+            elif hasattr(self.ui, "text_tanname", "toPlainText"):
                 tanname_val = self.ui.text_tanname.toPlainText().strip()
 
         sql = """
@@ -205,6 +198,7 @@ class MyWindow:
         AND (? = '' OR TAN_NAME LIKE ?)
         ORDER BY JUH_DENDAT, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD
         """
+        
         nouki_f_val = self.ui.date_Nouki_F.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
         nouki_t_val = self.ui.date_Nouki_T.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
         
@@ -223,7 +217,6 @@ class MyWindow:
             self.all_details_df = pd.read_sql(sql, conn, params=sql_params)
             conn.close()
 
-            # 【★修正】QMessageBoxの親を self から self.ui に変更
             if self.all_details_df.empty:
                 QMessageBox.information(self.ui, "確認", "該当するデータは見つかりませんでした。")
                 self.clear_ui()
@@ -247,7 +240,6 @@ class MyWindow:
             self._display_current_group()
 
         except Exception as e:
-            # 【★修正】QMessageBoxの親を self から self.ui に変更
             QMessageBox.critical(
                 self.ui,
                 "エラー",
@@ -294,7 +286,11 @@ class MyWindow:
             table.viewport().update()
 
         self.ui.chk_Nouki.setChecked(True)
+        self.ui.chk_Dendat.setChecked(True)
         self.ui.chk_Dendat.setChecked(False)
+
+        self.ui.date_Dendat_F.setEnabled(False)
+        self.ui.date_Dendat_T.setEnabled(False)
 
         today = QDate.currentDate()
         self.ui.date_Nouki_F.setDate(today)
@@ -341,6 +337,8 @@ class MyWindow:
             (
                 (self.all_details_df["JUH_DENDAT"] == key_dendat)
 
+
+
                 | (pd.isna(self.all_details_df["JUH_DENDAT"]) & pd.isna(key_dendat))
             )
             & (
@@ -349,6 +347,8 @@ class MyWindow:
             )
             & (
                 (self.all_details_df["JUH_NOUKI"] == key_nouki)
+
+
 
                 | (pd.isna(self.all_details_df["JUH_NOUKI"]) & pd.isna(key_nouki))
             )
@@ -359,11 +359,16 @@ class MyWindow:
             & (
                 (self.all_details_df["JUH_TANCD"] == key_tancd)
 
+
+
                 | (pd.isna(self.all_details_df["JUH_TANCD"]) & pd.isna(key_tancd))
             )
         ]
 
-        first_row = df_sub.iloc[0].to_dict()
+        if df_sub.empty:
+            return
+            
+        first_row = df_sub.iloc.to_dict()
 
         def format_to_date(val):
             if pd.isna(val) or val == "":
@@ -428,15 +433,13 @@ class MyWindow:
 
         print(f"【ログ】表示中: {self.current_group_idx + 1} / {len(self.grouped_keys)} グループ目")
 
-      # 【★修正】クローズイベントを書き換えます
     def closeEvent(self, event):
-        """画面が閉じられたときに呼び出され、メニュー画面を再表示する"""
-        if self.parent_menu:
-            self.parent_menu.show_menu() # 親のメニュー画面を表示
-        elif self.parent_root:
-            self.parent_root.deiconify()
-            self.parent_root.lift()
+        """【★究極修正】自分を閉じる瞬間に、後ろに重なっているメニュー画面を最前面に引っ張り出す"""
+        print("【ログ】画面を閉じ、メニューを最前面に呼び出します。")
+        if self.parent_menu and hasattr(self.parent_menu, "show_menu"):
+            self.parent_menu.show_menu()
         event.accept()
+
 
 def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header=False):
     """QTableWidgetItem を生成・装飾する共通ヘルパー関数"""
@@ -452,9 +455,8 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
     if is_header:
-        item.setBackground(QColor("#eff6ff"))
-        item.setForeground(QColor("#1e40af"))
-        
+        item.setBackground(QColor("#1e3a8a"))
+        item.setForeground(QColor("#ffffff"))
         font = QFont()
         font.setBold(True)
         item.setFont(font)
@@ -469,18 +471,18 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
 
 
 def show_window(parent_root):
-    """外部（Tkinter側など）からこのPySide6ウィンドウを呼び出すためのエントリー関数"""
+    """外部からこのPySide6ウィンドウを呼び出すためのエントリー関数"""
     app = QApplication.instance()
     if not app:
         app = QApplication(sys.argv)
-
+    
     window = MyWindow(parent_root)
-    window.show()  # 新設したshowメソッドで表示
+    window.show()
     app.exec()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyWindow()
-    window.show()  # 新設したshowメソッドで表示
+    window.show()
     sys.exit(app.exec())
