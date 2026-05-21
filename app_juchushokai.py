@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QTabWidget,
     QMessageBox,
+    QDateEdit
 )
 
 
@@ -92,18 +93,42 @@ class MyWindow(QMainWindow):
         self.clear_ui()             # 【★修正】起動時に一度クリアを呼んでlabel_Countを含め初期化
 
     def init_ui(self):
-        """検索条件の日付入力欄（QDateEdit）に初期値を設定する"""
+        """検索条件の初期化とチェックボックスの連動設定"""
         date_Nouki_F = self.ui.date_Nouki_F
         date_Nouki_T = self.ui.date_Nouki_T
         date_Dendat_F = self.ui.date_Dendat_F
         date_Dendat_T = self.ui.date_Dendat_T
 
-        # 納期条件：デフォルトは「本日 ～ 本日」
-        date_Nouki_F.setDate(QDate.currentDate())
-        date_Nouki_T.setDate(QDate.currentDate())
-        # 伝票日付条件：デフォルトは「1年前 ～ 昨日」
-        date_Dendat_F.setDate(QDate.currentDate().addYears(-1))
-        date_Dendat_T.setDate(QDate.currentDate().addDays(-1))
+        # スタイルシートで「無効時（:disabled）」の文字色をかなり薄いグレー（#bbbbbb）に指定
+        # 有効時は通常の黒（black）になります
+        disabled_style = """
+            QDateEdit { color: black; }
+            QDateEdit:disabled { color: #bbbbbb; }
+        """
+
+        # 全ての日付コントロールの基本表示設定
+        for widget in [date_Nouki_F, date_Nouki_T, date_Dendat_F, date_Dendat_T]:
+            widget.setDisplayFormat("yyyy/MM/dd")
+            widget.setStyleSheet(disabled_style)  # 薄いグレーのスタイルを適用
+            try:
+                widget.dateChanged.disconnect()
+            except Exception:
+                pass
+
+        # 1. 初期日付の計算（本日、および1か月前）
+        today = QDate.currentDate()
+        one_month_ago = today.addMonths(-1)
+
+        date_Nouki_F.setDate(today)
+        date_Nouki_T.setDate(today)
+        date_Dendat_F.setDate(one_month_ago)
+        date_Dendat_T.setDate(today)
+
+        # 2. チェックボックスの状態と日付欄の有効・無効（グレーアウト）を連動
+        self.ui.chk_Nouki.toggled.connect(date_Nouki_F.setEnabled)
+        self.ui.chk_Nouki.toggled.connect(date_Nouki_T.setEnabled)
+        self.ui.chk_Dendat.toggled.connect(date_Dendat_F.setEnabled)
+        self.ui.chk_Dendat.toggled.connect(date_Dendat_T.setEnabled)
 
     def init_table_design(self):
         """明細表示用テーブル（QTableWidget）の初期デザイン・列幅を設定する"""
@@ -178,21 +203,25 @@ class MyWindow(QMainWindow):
             AND JUH_DENNO = JUM_DENNO
         LEFT OUTER JOIN T_TANMST
             ON JUH_TANCD = TAN_CODE
-        WHERE JUH_NOUKI BETWEEN ? AND ?
-        AND JUH_DENDAT BETWEEN ? AND ?    
-        AND (? = '' OR JUM_TYUBAN LIKE ?)
+        WHERE (? = '' OR JUH_NOUKI BETWEEN ? AND ?)
+        AND (? = '' OR JUH_DENDAT BETWEEN ? AND ?)    
+        AND (? = '' OR JUH_CHUBAN LIKE ?)
         AND (? = '' OR TAN_NAME LIKE ?)
         ORDER BY JUH_DENDAT, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD
         """
+        # チェックボックスがONなら日付文字列、OFFなら空文字（条件無視）にする
+        nouki_f_val = self.ui.date_Nouki_F.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
+        nouki_t_val = self.ui.date_Nouki_T.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
+        
+        dendat_f_val = self.ui.date_Dendat_F.date().toString("yyyy-MM-dd") if self.ui.chk_Dendat.isChecked() else ""
+        dendat_t_val = self.ui.date_Dendat_T.date().toString("yyyy-MM-dd") if self.ui.chk_Dendat.isChecked() else ""
 
-        # SQLパラメータのリスト作成（部分一致用に「%」で囲む）
+        # SQLパラメータのリスト作成
         sql_params = [
-            self.ui.date_Nouki_F.date().toString("yyyy-MM-dd"),
-            self.ui.date_Nouki_T.date().toString("yyyy-MM-dd"),
-            self.ui.date_Dendat_F.date().toString("yyyy-MM-dd"),
-            self.ui.date_Dendat_T.date().toString("yyyy-MM-dd"),
-            tyuban_val, f"%{tyuban_val}%",    # 注番用の判定値とLIKE検索値
-            tanname_val, f"%{tanname_val}%"   # 担当者名用の判定値とLIKE検索値
+            nouki_f_val, nouki_f_val, nouki_t_val,     # 納期用
+            dendat_f_val, dendat_f_val, dendat_t_val,   # 受注日用
+            tyuban_val, f"%{tyuban_val}%",
+            tanname_val, f"%{tanname_val}%"
         ]
 
         try:
@@ -279,8 +308,16 @@ class MyWindow(QMainWindow):
             table.setRowHeight(1, 20)
             table.viewport().update()
 
-        # 4. 日付入力欄を起動時のデフォルトにリセット
-        self.init_ui()
+        # 4. 日付入力欄のチェックボックスを解除（受注日は指定なし・グレーアウトにする）
+        self.ui.chk_Nouki.setChecked(True)
+        self.ui.chk_Dendat.setChecked(False)
+
+        # 日付自体も初期値（直近1か月/本日）にリセット
+        today = QDate.currentDate()
+        self.ui.date_Nouki_F.setDate(today)
+        self.ui.date_Nouki_T.setDate(today)
+        self.ui.date_Dendat_F.setDate(today.addMonths(-1))
+        self.ui.date_Dendat_T.setDate(today.addDays(-1))
 
     def on_nextButton_click(self):
         """「次へ」ボタン押下時、インデックスを1つ進めて次の伝票を表示する"""
@@ -444,6 +481,11 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
     if is_header:
         item.setBackground(QColor("#eff6ff"))
         item.setForeground(QColor("#1e40af"))
+        
+        # フォントオブジェクトを作成し、太字（Bold）に設定してセルに適用する
+        font = QFont()
+        font.setBold(True)
+        item.setFont(font)
 
     if align_center or is_header:
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
