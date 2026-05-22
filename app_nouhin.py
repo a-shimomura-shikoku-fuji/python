@@ -32,14 +32,7 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
         """UIの初期セットアップ"""
         self.setupUi(self)
 
-        # ★【ご要望の追加】ウィンドウアイコンに my_logo.ico を設定
-        # loadUiType方式のため、self.ui.setWindowIcon ではなく直接 self.setWindowIcon で適用します
-        ico_path = os.path.join(os.path.dirname(__file__), "my_logo.ico")
-        if os.path.exists(ico_path):
-            self.setWindowIcon(QIcon(ico_path))
-        else:
-            # スクリプトと同じフォルダにない場合でもエラーを吐かないよう安全対策
-            self.setWindowIcon(QIcon("my_logo.ico"))
+        common_utils.set_common_window_icon(self)
 
         # 初期値として現在のシステム日付（今日）をセット
         self.date_Target.setDate(QDate.currentDate())
