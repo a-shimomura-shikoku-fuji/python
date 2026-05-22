@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>436</width>
-    <height>286</height>
+    <width>480</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="font">
@@ -76,8 +76,8 @@ QDateEdit:focus {
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>220</y>
-      <width>391</width>
+      <y>230</y>
+      <width>441</width>
       <height>51</height>
      </rect>
     </property>
@@ -112,7 +112,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
     <widget class="QPushButton" name="btn_excute">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>380</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -136,7 +136,7 @@ QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
     <widget class="QPushButton" name="pushButton_10">
      <property name="geometry">
       <rect>
-       <x>270</x>
+       <x>320</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -159,7 +159,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
     <widget class="QPushButton" name="pushButton_1">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>140</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -175,7 +175,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
     <widget class="QPushButton" name="pushButton_3">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>200</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -191,7 +191,23 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
     <widget class="QPushButton" name="pushButton_4">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>260</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #cbd5e1;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -236,7 +252,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <rect>
       <x>190</x>
       <y>60</y>
-      <width>221</width>
+      <width>271</width>
       <height>21</height>
      </rect>
     </property>
@@ -259,12 +275,12 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_10">
+   <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>120</y>
-      <width>101</width>
+      <x>30</x>
+      <y>30</y>
+      <width>81</width>
       <height>21</height>
      </rect>
     </property>
@@ -275,71 +291,135 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">  background-color: #94a3b8;
-    color: #ffffff !important;
-    font-weight: bold;
-    border: 1px solid #475569;
-    border-radius: 4px;
-</string>
+     <string notr="true">color: #1e3a8a;</string>
     </property>
     <property name="text">
-     <string>表示順</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
+     <string>＜検索条件＞</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="chk_uriagezero">
+   <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>120</y>
-      <width>211</width>
+      <x>30</x>
+      <y>110</y>
+      <width>81</width>
       <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>売上金額が0の場合は表示しない</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="text_sort">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>120</y>
-      <width>71</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
+      <bold>true</bold>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #ffffff;
+     <string notr="true">color: #1e3a8a;</string>
+    </property>
+    <property name="text">
+     <string>＜検索結果＞</string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>441</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid #475569;
+border-radius: 6px;</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <widget class="QCheckBox" name="chk_uriagezero">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>20</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>売上金額が0の場合は表示しない</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="text_sort">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #ffffff;
     border: 1px solid #94a3b8;
     border-radius: 4px;
     padding: 1px;
     color: #0f172a;
 </string>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-    </property>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #94a3b8;
+    color: #ffffff !important;
+    font-weight: bold;
+    border: 1px solid #475569;
+    border-radius: 4px;
+</string>
+     </property>
+     <property name="text">
+      <string>表示順</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
    </widget>
+   <zorder>frame_2</zorder>
    <zorder>label_1</zorder>
    <zorder>frame</zorder>
    <zorder>text_tokcd</zorder>
    <zorder>label_tokname</zorder>
-   <zorder>chk_uriagezero</zorder>
-   <zorder>text_sort</zorder>
-   <zorder>label_10</zorder>
+   <zorder>label_8</zorder>
+   <zorder>label_9</zorder>
   </widget>
  </widget>
  <resources/>
