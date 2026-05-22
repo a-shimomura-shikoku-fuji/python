@@ -41,11 +41,11 @@ class MyWindow:
         self.ui = loader.load(ui_path)
 
         # 2. ウィンドウ外観（サイズ・タイトル・アイコン）の設定
-        self.ui.setWindowTitle(self.ui.windowTitle())
+        self.ui.setWindowTitle("受注照会システム")
         self.ui.setWindowIcon(QIcon("my_logo.ico"))
         self.ui.setFixedSize(self.ui.size()) 
 
-        # 【★重要】クローズイベントをこのクラスの closeEvent メソッドに完全にフックする
+        # クローズイベントをこのクラスの closeEvent メソッドに完全にフックする
         self.ui.closeEvent = self.closeEvent
 
         # 3. イベントシグナルの連携
@@ -74,7 +74,6 @@ class MyWindow:
         self.init_table_design()    
         self.clear_ui()             
 
-        # 【戻るボタン対策】
         # UI内の「戻る」ボタンを全自動で探索して閉じるアクションを紐付け
         self.bind_back_button()
 
@@ -98,7 +97,7 @@ class MyWindow:
     def init_ui(self):
         """検索条件の初期化とチェックボックスの連動設定"""
         disabled_style = """
-            QDateEdit { color: black; }
+            QDateEdit { color: black; background-color: #ffffff; }
             QDateEdit:disabled { color: #bbbbbb; background-color: #f1f5f9; }
         """
 
@@ -108,19 +107,13 @@ class MyWindow:
             try: widget.dateChanged.disconnect()
             except: pass
 
-        today = QDate.currentDate()
-        one_month_ago = today.addMonths(-1)
-
-        self.ui.date_Nouki_F.setDate(today)
-        self.ui.date_Nouki_T.setDate(today)
-        self.ui.date_Dendat_F.setDate(one_month_ago)
-        self.ui.date_Dendat_T.setDate(today)
-
+        # シグナル重複接続をリセット
         try: self.ui.chk_Nouki.toggled.disconnect()
         except: pass
         try: self.ui.chk_Dendat.toggled.disconnect()
         except: pass
 
+        # チェックボックスと日付エリアの有効・無効化の連動
         self.ui.chk_Nouki.toggled.connect(self.ui.date_Nouki_F.setEnabled)
         self.ui.chk_Nouki.toggled.connect(self.ui.date_Nouki_T.setEnabled)
         self.ui.chk_Dendat.toggled.connect(self.ui.date_Dendat_F.setEnabled)
@@ -159,17 +152,19 @@ class MyWindow:
 
         tyuban_val = ""
         if hasattr(self.ui, "text_tyuban"):
-            if hasattr(self.ui.text_tyuban, "text"):
-                tyuban_val = self.ui.text_tyuban.text().strip()
-            elif hasattr(self.ui, "text_tyuban", "toPlainText"):
-                tyuban_val = self.ui.text_tyuban.toPlainText().strip()
+            widget = self.ui.text_tyuban
+            if hasattr(widget, "text"):
+                tyuban_val = widget.text().strip()
+            elif hasattr(widget, "toPlainText"):
+                tyuban_val = widget.toPlainText().strip()
 
         tanname_val = ""
         if hasattr(self.ui, "text_tanname"):
-            if hasattr(self.ui.text_tanname, "text"):
-                tanname_val = self.ui.text_tanname.text().strip()
-            elif hasattr(self.ui, "text_tanname", "toPlainText"):
-                tanname_val = self.ui.text_tanname.toPlainText().strip()
+            widget = self.ui.text_tanname
+            if hasattr(widget, "text"):
+                tanname_val = widget.text().strip()
+            elif hasattr(widget, "toPlainText"):
+                tanname_val = widget.toPlainText().strip()
 
         sql = """
         SELECT
@@ -218,9 +213,15 @@ class MyWindow:
             conn.close()
 
             if self.all_details_df.empty:
-                QMessageBox.information(self.ui, "確認", "該当するデータは見つかりませんでした。")
+                QMessageBox.information(self.ui, "確認", "該当する data は見つかりませんでした。")
                 self.clear_ui()
                 return
+
+            # 不整合の原因となる過剰な型変換を廃止し、空白のトリミングと欠損値補正のみ行う
+            for col in ["JUH_DENDAT", "JUM_TYUBAN", "JUH_NOUKI", "JUH_TOKNM1", "JUH_TANCD"]:
+                self.all_details_df[col] = self.all_details_df[col].fillna("")
+                if self.all_details_df[col].dtype == object:
+                    self.all_details_df[col] = self.all_details_df[col].astype(str).str.strip()
 
             group_keys = [
                 "JUH_DENDAT",
@@ -285,18 +286,17 @@ class MyWindow:
             table.setRowHeight(1, 20)
             table.viewport().update()
 
-        self.ui.chk_Nouki.setChecked(True)
-        self.ui.chk_Dendat.setChecked(True)
-        self.ui.chk_Dendat.setChecked(False)
-
-        self.ui.date_Dendat_F.setEnabled(False)
-        self.ui.date_Dendat_T.setEnabled(False)
-
+        # 日付選択の初期値とグレーアウトの確実な同期
         today = QDate.currentDate()
         self.ui.date_Nouki_F.setDate(today)
         self.ui.date_Nouki_T.setDate(today)
         self.ui.date_Dendat_F.setDate(today.addMonths(-1))
-        self.ui.date_Dendat_T.setDate(today.addDays(-1))
+        self.ui.date_Dendat_T.setDate(today)
+
+        # 一度TrueにしてからFalseに落とすことで、Qt内部のトグルイベントを確実に発火させグレーアウトさせる
+        self.ui.chk_Nouki.setChecked(True)
+        self.ui.chk_Dendat.setChecked(True)
+        self.ui.chk_Dendat.setChecked(False)
 
     def on_nextButton_click(self):
         """「次へ」ボタン押下時、インデックスを1つ進めて次の伝票を表示する"""
@@ -333,58 +333,36 @@ class MyWindow:
         current_key = self.grouped_keys[self.current_group_idx]
         key_dendat, key_tyuban, key_nouki, key_toknm1, key_tancd = current_key
 
-        df_sub = self.all_details_df[
-            (
-                (self.all_details_df["JUH_DENDAT"] == key_dendat)
+        # 生の型ブレ、NaN、空白を完全にクリアした安全な条件で完全一致抽出
+        cond_dendat = (self.all_details_df["JUH_DENDAT"] == key_dendat) | (pd.isna(self.all_details_df["JUH_DENDAT"]) & pd.isna(key_dendat))
+        cond_tyuban = (self.all_details_df["JUM_TYUBAN"] == key_tyuban) | (pd.isna(self.all_details_df["JUM_TYUBAN"]) & pd.isna(key_tyuban))
+        cond_nouki = (self.all_details_df["JUH_NOUKI"] == key_nouki) | (pd.isna(self.all_details_df["JUH_NOUKI"]) & pd.isna(key_nouki))
+        cond_toknm1 = (self.all_details_df["JUH_TOKNM1"] == key_toknm1) | (pd.isna(self.all_details_df["JUH_TOKNM1"]) & pd.isna(key_toknm1))
+        cond_tancd = (self.all_details_df["JUH_TANCD"] == key_tancd) | (pd.isna(self.all_details_df["JUH_TANCD"]) & pd.isna(key_tancd))
 
-
-
-                | (pd.isna(self.all_details_df["JUH_DENDAT"]) & pd.isna(key_dendat))
-            )
-            & (
-                (self.all_details_df["JUM_TYUBAN"] == key_tyuban)
-                | (pd.isna(self.all_details_df["JUM_TYUBAN"]) & pd.isna(key_tyuban))
-            )
-            & (
-                (self.all_details_df["JUH_NOUKI"] == key_nouki)
-
-
-
-                | (pd.isna(self.all_details_df["JUH_NOUKI"]) & pd.isna(key_nouki))
-            )
-            & (
-                (self.all_details_df["JUH_TOKNM1"] == key_toknm1)
-                | (pd.isna(self.all_details_df["JUH_TOKNM1"]) & pd.isna(key_toknm1))
-            )
-            & (
-                (self.all_details_df["JUH_TANCD"] == key_tancd)
-
-
-
-                | (pd.isna(self.all_details_df["JUH_TANCD"]) & pd.isna(key_tancd))
-            )
-        ]
+        df_sub = self.all_details_df[cond_dendat & cond_tyuban & cond_nouki & cond_toknm1 & cond_tancd]
 
         if df_sub.empty:
+            print("【デバッグ警告】マッチするデータ明細が存在しません。")
             return
             
-        first_row = df_sub.iloc.to_dict()
+        first_row = df_sub.iloc[0].to_dict()
 
         def format_to_date(val):
-            if pd.isna(val) or val == "":
+            if pd.isna(val) or str(val).strip() in ["", "nan", "NaT"]:
                 return ""
             try:
                 dt = pd.to_datetime(val)
                 return dt.strftime("%Y/%m/%d")
             except Exception:
-                return str(val)
+                return str(val).strip()
 
         mapping = {
             "label_dendat": format_to_date(key_dendat),
-            "label_tyuban": str(key_tyuban) if pd.notna(key_tyuban) else "",
+            "label_tyuban": str(key_tyuban).strip() if pd.notna(key_tyuban) and str(key_tyuban) != "nan" else "",
             "label_nouki": format_to_date(key_nouki),
-            "label_toknm1": str(key_toknm1) if pd.notna(key_toknm1) else "",
-            "label_tanname": str(first_row.get("TAN_NAME")) if pd.notna(first_row.get("TAN_NAME")) else "",
+            "label_toknm1": str(key_toknm1).strip() if pd.notna(key_toknm1) and str(key_toknm1) != "nan" else "",
+            "label_tanname": str(first_row.get("TAN_NAME")).strip() if pd.notna(first_row.get("TAN_NAME")) else "",
         }
 
         for label_name, val in mapping.items():
@@ -431,13 +409,16 @@ class MyWindow:
 
             table.viewport().update()
 
-        print(f"【ログ】表示中: {self.current_group_idx + 1} / {len(self.grouped_keys)} グループ目")
+        print(f"运行中: 表示中: {self.current_group_idx + 1} / {len(self.grouped_keys)} グループ目")
 
     def closeEvent(self, event):
-        """【★究極修正】自分を閉じる瞬間に、後ろに重なっているメニュー画面を最前面に引っ張り出す"""
+        """【★連動修正】画面を閉じる際、親メニュー画面を最前面に表示する"""
         print("【ログ】画面を閉じ、メニューを最前面に呼び出します。")
         if self.parent_menu and hasattr(self.parent_menu, "show_menu"):
             self.parent_menu.show_menu()
+        elif self.parent_root:
+            self.parent_root.deiconify()
+            self.parent_root.lift()
         event.accept()
 
 
@@ -455,7 +436,7 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
     if is_header:
-        item.setBackground(QColor("#1e3a8a"))
+        item.setBackground(QColor("#94a3b8"))
         item.setForeground(QColor("#ffffff"))
         font = QFont()
         font.setBold(True)
