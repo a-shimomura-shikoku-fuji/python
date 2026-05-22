@@ -30,12 +30,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         self.parent_menu = parent_menu
         self.setupUi(self)
 
-        # 画面位置の初期化（PySide6標準の命令で安全に中央配置）
-        self.resize(436, 286)
-        screen_geo = self.screen().geometry()
-        x = (screen_geo.width() - 436) // 2
-        y = (screen_geo.height() - 286) // 2
-        self.move(x, y)
+        common_utils.set_common_window_icon(self)
 
         # 画面起動時の状態をセット (現在の年月)
         self.reset_to_initial_state()
