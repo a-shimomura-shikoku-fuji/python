@@ -7,13 +7,14 @@ from openpyxl.styles import Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from PySide6.QtCore import QDate, Qt
+from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QPushButton
 from PySide6.QtUiTools import loadUiType
 
 # 共通ユーティリティのインポート
 import common_utils
 
-# Pythonに古い一時ファイル（.pyc）を一切作らせない・読み込させない設定
+# Pythonに古い一時ファイル（.pyc）を作らせない設定
 sys.dont_write_bytecode = True
 
 # メイン画面のUIファイルをロード
@@ -177,7 +178,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
                         cell.font = font_bold
                     elif is_new:
                         cell.fill = fill_new
-                    
+
                     # 金額・コード列の3桁カンマ区切り（2列目と5列目）
                     if c_idx in [2, 5] and r_idx > 1:
                         cell.number_format = "#,##0"
@@ -185,7 +186,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             # ソート用の一時列を削除
             ws.delete_cols(sort_col_idx)
 
-            # 列幅の自動調整（不必要なエンコード計算を最適化）
+            # 列幅の自動調整
             for i in range(1, ws.max_column + 1):
                 col_letter = get_column_letter(i)
                 if i in [2, 5]:
@@ -221,13 +222,18 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "エラー", f"失敗しました:\n{e}")
 
-# 設定画面のUIファイルをロード（重複していた箇所の集約）
+# 設定画面のUIファイルをロード
+ui_sub_path = os.path.join(os.path.dirname(__file__), "app_urikake_setting.ui")
+Ui_SettingDialog, _ = loadUiType(ui_sub_path)
+
+
+# 設定画面のUIファイルをロード
 ui_sub_path = os.path.join(os.path.dirname(__file__), "app_urikake_setting.ui")
 Ui_SettingDialog, _ = loadUiType(ui_sub_path)
 
 
 class SettingWindow(QMainWindow, Ui_SettingDialog):
-    """出力設定変更サブ画面 クラス"""
+    """出力設定変更サブ画面 クラス（デザイン維持・挙動完全安定化版）"""
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -244,51 +250,58 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
         # 子画面として最前面に固定
         self.setWindowModality(Qt.WindowModality.WindowModal)
 
+        # 【改善】デザインを変更するスタイルシートはすべて廃止
+        # キー入力とフォーカス移動の制御用イベントフィルタのみを設定
+        if hasattr(self, "text_tokcd"):
+            self.text_tokcd.installEventFilter(self)
+        if hasattr(self, "text_sort"):
+            self.text_sort.installEventFilter(self)
+
         # Tabキーフォーカス設定
         if hasattr(self, "chk_uriagezero"):
             self.chk_uriagezero.setFocusPolicy(Qt.FocusPolicy.TabFocus)
 
-        # 初期フォーカスとリアルタイム変更監視のシグナル接続
+        # 初期フォーカス設定
         if hasattr(self, "text_tokcd"):
             self.text_tokcd.setFocus()
-            self.text_tokcd.textChanged.connect(self.handle_tokcd_change)
-        if hasattr(self, "text_sort"):
-            self.text_sort.textChanged.connect(self.handle_sort_change)
 
         # ボタン類のシグナル接続
         self.btn_back.clicked.connect(self.close)
         self.pushButton_10.clicked.connect(self.clear_fields)
         self.btn_excute.clicked.connect(self.update_settings)
 
-    def handle_tokcd_change(self):
-        """得意先コード欄でEnterやTabが入力された瞬間に自動検索して、表示順へ移動する処理"""
-        if not hasattr(self, "text_tokcd"):
-            return
-        txt = self.text_tokcd.toPlainText()
+    def eventFilter(self, obj, event):
+        """QTextEditでのEnter/Tabキーおよびフォーカスアウトの挙動を完全に制御する"""
+        # キー入力時の制御
+        if event.type() == event.Type.KeyPress:
+            # 得意先コード欄での制御
+            if obj == self.text_tokcd:
+                if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter, Qt.Key.Key_Tab):
+                    self.on_enter()
+                    if hasattr(self, "text_sort"):
+                        self.text_sort.setFocus()
+                        self.text_sort.selectAll()
+                    return True  # 改行やタブの挿入を防ぐ
 
-        if "\n" in txt or "\t" in txt:
-            self.on_enter()
-            if hasattr(self.text_tokcd, "textCursor"):
-                cursor = self.text_tokcd.textCursor()
-                cursor.movePosition(cursor.MoveOperation.End)
-                self.text_tokcd.setTextCursor(cursor)
-                self.text_tokcd.ensureCursorVisible()
+            # 表示順欄での制御
+            elif obj == self.text_sort:
+                if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+                    self.update_settings()
+                    return True
+                elif event.key() == Qt.Key.Key_Tab:
+                    if hasattr(self, "chk_uriagezero"):
+                        self.chk_uriagezero.setFocus()
+                    return True
 
-            if hasattr(self, "text_sort"):
-                self.text_sort.setFocus()
-                if hasattr(self.text_sort, "selectAll"):
-                    self.text_sort.selectAll()
+        # 【新規】フォーカスが外れた（別のコントロールに移った）瞬間に反転を安全に解除する
+        elif event.type() == event.Type.FocusOut:
+            if hasattr(obj, "textCursor"):
+                cursor = obj.textCursor()
+                if cursor.hasSelection():
+                    cursor.clearSelection()  # デザインを崩さずに青い選択状態だけを解除
+                    obj.setTextCursor(cursor)
 
-    def handle_sort_change(self):
-        """表示順欄での改行(Enter)を検知して、自動で「変更（更新）」を実行する処理"""
-        if not hasattr(self, "text_sort"):
-            return
-        txt = self.text_sort.toPlainText()
-        if "\n" in txt:
-            self.text_sort.blockSignals(True)
-            self.text_sort.setPlainText("". join(filter(str.isdigit, txt)))
-            self.text_sort.blockSignals(False)
-            self.update_settings()
+        return super().eventFilter(obj, event)
 
     def on_enter(self):
         """得意先コード入力後の検索・ゼロ埋めと画面表示処理"""
@@ -317,7 +330,6 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
             if hasattr(self, "text_sort"):
                 self.text_sort.blockSignals(True)
                 self.text_sort.setPlainText(str(curr_sort))
-                self.text_sort.ensureCursorVisible()
                 self.text_sort.blockSignals(False)
 
             self.chk_uriagezero.setChecked(True if curr_flag == 0 else False)
@@ -400,3 +412,4 @@ if __name__ == "__main__":
     window = UrikakeWindow()
     window.show()
     sys.exit(app.exec())
+
