@@ -2,6 +2,7 @@ import os
 import calendar
 import pyodbc
 from openpyxl.styles import Border, Side, Font, PatternFill
+from PySide6.QtGui import QIcon
 import config
 
 def center_window(win, width, height):
@@ -14,6 +15,18 @@ def center_window(win, width, height):
     y = int((screen_height / 2) - (height / 2))
     
     win.geometry(f"{width}x{height}+{x}+{y}")
+
+def set_common_window_icon(window_obj, icon_name="my_logo.ico"):
+    """
+    指定されたウィンドウオブジェクトに共通のアイコンを設定する。
+    """
+    try:
+        # 実行ファイルパスを基に安全に読み込み
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), icon_name)
+        if os.path.exists(icon_path):
+            window_obj.setWindowIcon(QIcon(icon_path))
+    except Exception as e:
+        print(f"Icon error: {e}")
 
 def get_date_info(year_val, month_val):
     """入力値から日付範囲、シート名、保存先を生成する"""
