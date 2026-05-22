@@ -133,11 +133,17 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
                 ('H1:I1', 'TPH8512RED'), ('J1:K1', '電纜ホース')
             ]
 
+            # エラーが起きない安全なループ処理
             for cell_range, title in header_map:
+                # 1. 先にセルを結合
                 ws.merge_cells(cell_range)
-                top_left_cell_coord = cell_range.split(':')
-                top_left_cell = ws[top_left_cell_coord]
-                top_left_cell.value = title
+
+                # 2. 結合範囲の左上端のセルを直接取得して値を書き込む
+                # (ws['A1'] などの文字列キー指定を回避し、行と列のオブジェクトから直接書き込みます)
+                for row in ws[cell_range]:
+                    top_left_cell = row[0]
+                    top_left_cell.value = title
+                    break  # 左上の1セルだけに書き込めば良いので、最初の1回でループを抜ける
 
             for i, col in enumerate(ws.iter_cols(min_row=1, max_col=ws.max_column), 1):
                 col_letter = get_column_letter(i)
