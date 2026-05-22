@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainMenuWindow</class>
+ <widget class="QMainWindow" name="MainMenuWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>750</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>業務支援メニュー</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow { background-color: #f8fafc; }
+QFrame#Sidebar { background-color: #0f172a; }
+
+/* 左側ナビゲーションボタン */
+QFrame#Sidebar QPushButton {
+    color: #cbd5e1 !important; 
+    background-color: transparent !important; 
+    text-align: left;
+    padding-left: 15px; 
+    border: none !important; 
+    border-radius: 6px;
+}
+QFrame#Sidebar QPushButton:hover { color: #ffffff !important; background-color: #1e293b !important; }
+QFrame#Sidebar QPushButton:checked { color: #ffffff !important; background-color: #2563eb !important; font-weight: bold; }
+
+/* 右側業務機能ボタン（営業技術部・総務部共通の洗練されたネイビーデザイン） */
+QStackedWidget QPushButton {
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    border-radius: 6px;
+    font-size: 11pt;
+    font-weight: bold;
+    border: 1px solid #172554;
+}
+QStackedWidget QPushButton:hover, QStackedWidget QPushButton:focus {
+    background-color: #2563eb;
+    color: #ffffff !important;
+    border: 1px solid #60a5fa;
+}
+QStackedWidget QPushButton:disabled {
+    background-color: #f1f5f9;
+    color: #94a3b8 !important;
+    border: 1px solid #e2e8f0;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_Main">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="Sidebar">
+      <property name="minimumSize">
+       <size>
+        <width>180</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>180</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_Sidebar">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>20</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>20</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="title_label">
+         <property name="font">
+          <font>
+           <family>Meiryo</family>
+           <pointsize>13</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: #ffffff; margin-bottom: 15px;</string>
+         </property>
+         <property name="text">
+          <string>業務支援メニュー</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_common">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>42</height>
+          </size>
+         </property>
+         <property name="font">
+          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+         </property>
+         <property name="text">
+          <string> 共通</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_qa">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>42</height>
+          </size>
+         </property>
+         <property name="font">
+          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+         </property>
+         <property name="text">
+          <string> 品質保証部</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_sales">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>42</height>
+          </size>
+         </property>
+         <property name="font">
+          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+         </property>
+         <property name="text">
+          <string> 営業技術部</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_admin">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>42</height>
+          </size>
+         </property>
+         <property name="font">
+          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+         </property>
+         <property name="text">
+          <string> 総務部</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_factory">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>42</height>
+          </size>
+         </property>
+         <property name="font">
+          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+         </property>
+         <property name="text">
+          <string> 製造部</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer_sidebar">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="styleSheet">
+       <string notr="true">background-color: #f8fafc;</string>
+      </property>
+      <widget class="QWidget" name="page_common">
+       <layout class="QVBoxLayout" name="verticalLayout_common">
+        <property name="leftMargin"><number>30</number></property>
+        <property name="topMargin"><number>30</number></property>
+        <property name="rightMargin"><number>30</number></property>
+        <property name="bottomMargin"><number>30</number></property>
+        <item>
+         <widget class="QLabel" name="title_common">
+          <property name="font">
+           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+          </property>
+          <property name="text">
+           <string>共通 業務メニュー</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer_common_bottom">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_qa">
+       <layout class="QVBoxLayout" name="verticalLayout_qa">
+        <property name="leftMargin"><number>30</number></property>
+        <property name="topMargin"><number>30</number></property>
+        <property name="rightMargin"><number>30</number></property>
+        <property name="bottomMargin"><number>30</number></property>
+        <item>
+         <widget class="QLabel" name="title_qa">
+          <property name="font">
+           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+          </property>
+          <property name="text">
+           <string>品質保証部 業務メニュー</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer_qa_bottom">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      
+      <!-- ページ2：営業技術部（不要な開発中ボタンを削除し、受注照会のみに） -->
+      <widget class="QWidget" name="page_sales">
+       <layout class="QVBoxLayout" name="verticalLayout_sales">
+        <property name="leftMargin"><number>30</number></property>
+        <property name="topMargin"><number>30</number></property>
+        <property name="rightMargin"><number>30</number></property>
+        <property name="bottomMargin"><number>30</number></property>
+        <item>
+         <widget class="QLabel" name="title_sales">
+          <property name="font">
+           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+          </property>
+          <property name="text">
+           <string>営業技術部 業務メニュー</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_sales_btns">
+          <property name="spacing"><number>20</number></property>
+          <item>
+           <widget class="QPushButton" name="btn_juchu">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size><width>160</width><height>80</height></size>
+            </property>
+            <property name="text">
+             <string>受注照会</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacer_sales_btns">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="spacer_sales_bottom">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      
+      <!-- ページ3：総務部 -->
+      <widget class="QWidget" name="page_admin">
+       <layout class="QVBoxLayout" name="verticalLayout_admin">
+        <property name="leftMargin"><number>30</number></property>
+        <property name="topMargin"><number>30</number></property>
+        <property name="rightMargin"><number>30</number></property>
+        <property name="bottomMargin"><number>30</number></property>
+        <item>
+         <widget class="QLabel" name="title_admin">
+          <property name="font">
+           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+          </property>
+          <property name="text">
+           <string>総務部 業務メニュー</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_admin_btns">
+          <property name="spacing"><number>20</number></property>
+          <item>
+           <widget class="QPushButton" name="btn_urikake">
+            <property name="minimumSize">
+             <size><width>160</width><height>80</height></size>
+            </property>
+            <property name="text">
+             <string>売掛金回収状況一覧</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_uriage_utivake">
+            <property name="minimumSize">
+             <size><width>160</width><height>80</height></size>
+            </property>
+            <property name="text">
+             <string>納品書に基づく売上内訳</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacer_admin_btns">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="spacer_admin_bottom">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      
+      <widget class="QWidget" name="page_factory">
+       <layout class="QVBoxLayout" name="verticalLayout_factory">
+        <property name="leftMargin"><number>30</number></property>
+        <property name="topMargin"><number>30</number></property>
+        <property name="rightMargin"><number>30</number></property>
+        <property name="bottomMargin"><number>30</number></property>
+        <item>
+         <widget class="QLabel" name="title_factory">
+          <property name="font">
+           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+          </property>
+          <property name="text">
+           <string>製造部 業務メニュー</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_factory_btns">
+          <property name="spacing"><number>20</number></property>
+          <item>
+           <widget class="QPushButton" name="btn_seizu">
+            <property name="enabled"><bool>false</bool></property>
+            <property name="minimumSize">
+             <size><width>160</width><height>80</height></size>
+            </property>
+            <property name="text">
+             <string>生産計画登録(開発中)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacer_factory_btns">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="spacer_factory_bottom">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
