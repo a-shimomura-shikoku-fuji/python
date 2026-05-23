@@ -80,6 +80,11 @@ QStackedWidget QPushButton:disabled {
         <height>16777215</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_Sidebar">
        <property name="spacing">
         <number>8</number>
@@ -112,7 +117,7 @@ QStackedWidget QPushButton:disabled {
           <string>業務支援メニュー</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -125,7 +130,11 @@ QStackedWidget QPushButton:disabled {
           </size>
          </property>
          <property name="font">
-          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+          <font>
+           <family>Meiryo</family>
+           <pointsize>11</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string> 共通</string>
@@ -144,7 +153,11 @@ QStackedWidget QPushButton:disabled {
           </size>
          </property>
          <property name="font">
-          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+          <font>
+           <family>Meiryo</family>
+           <pointsize>11</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string> 品質保証部</string>
@@ -163,7 +176,11 @@ QStackedWidget QPushButton:disabled {
           </size>
          </property>
          <property name="font">
-          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+          <font>
+           <family>Meiryo</family>
+           <pointsize>11</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string> 営業技術部</string>
@@ -182,7 +199,11 @@ QStackedWidget QPushButton:disabled {
           </size>
          </property>
          <property name="font">
-          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+          <font>
+           <family>Meiryo</family>
+           <pointsize>11</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string> 総務部</string>
@@ -201,7 +222,11 @@ QStackedWidget QPushButton:disabled {
           </size>
          </property>
          <property name="font">
-          <font><family>Meiryo</family><pointsize>10</pointsize><bold>true</bold></font>
+          <font>
+           <family>Meiryo</family>
+           <pointsize>11</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string> 製造部</string>
@@ -214,7 +239,7 @@ QStackedWidget QPushButton:disabled {
        <item>
         <spacer name="spacer_sidebar">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -234,14 +259,26 @@ QStackedWidget QPushButton:disabled {
       </property>
       <widget class="QWidget" name="page_common">
        <layout class="QVBoxLayout" name="verticalLayout_common">
-        <property name="leftMargin"><number>30</number></property>
-        <property name="topMargin"><number>30</number></property>
-        <property name="rightMargin"><number>30</number></property>
-        <property name="bottomMargin"><number>30</number></property>
+        <property name="leftMargin">
+         <number>30</number>
+        </property>
+        <property name="topMargin">
+         <number>30</number>
+        </property>
+        <property name="rightMargin">
+         <number>30</number>
+        </property>
+        <property name="bottomMargin">
+         <number>30</number>
+        </property>
         <item>
          <widget class="QLabel" name="title_common">
           <property name="font">
-           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+           <font>
+            <family>Meiryo</family>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
@@ -253,22 +290,41 @@ QStackedWidget QPushButton:disabled {
         </item>
         <item>
          <spacer name="spacer_common_bottom">
-          <property name="orientation"><enum>Qt::Vertical</enum></property>
-          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
          </spacer>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="page_qa">
        <layout class="QVBoxLayout" name="verticalLayout_qa">
-        <property name="leftMargin"><number>30</number></property>
-        <property name="topMargin"><number>30</number></property>
-        <property name="rightMargin"><number>30</number></property>
-        <property name="bottomMargin"><number>30</number></property>
+        <property name="leftMargin">
+         <number>30</number>
+        </property>
+        <property name="topMargin">
+         <number>30</number>
+        </property>
+        <property name="rightMargin">
+         <number>30</number>
+        </property>
+        <property name="bottomMargin">
+         <number>30</number>
+        </property>
         <item>
          <widget class="QLabel" name="title_qa">
           <property name="font">
-           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+           <font>
+            <family>Meiryo</family>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
@@ -280,24 +336,41 @@ QStackedWidget QPushButton:disabled {
         </item>
         <item>
          <spacer name="spacer_qa_bottom">
-          <property name="orientation"><enum>Qt::Vertical</enum></property>
-          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
          </spacer>
         </item>
        </layout>
       </widget>
-      
-      <!-- ページ2：営業技術部（不要な開発中ボタンを削除し、受注照会のみに） -->
       <widget class="QWidget" name="page_sales">
        <layout class="QVBoxLayout" name="verticalLayout_sales">
-        <property name="leftMargin"><number>30</number></property>
-        <property name="topMargin"><number>30</number></property>
-        <property name="rightMargin"><number>30</number></property>
-        <property name="bottomMargin"><number>30</number></property>
+        <property name="leftMargin">
+         <number>30</number>
+        </property>
+        <property name="topMargin">
+         <number>30</number>
+        </property>
+        <property name="rightMargin">
+         <number>30</number>
+        </property>
+        <property name="bottomMargin">
+         <number>30</number>
+        </property>
         <item>
          <widget class="QLabel" name="title_sales">
           <property name="font">
-           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+           <font>
+            <family>Meiryo</family>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
@@ -309,7 +382,9 @@ QStackedWidget QPushButton:disabled {
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_sales_btns">
-          <property name="spacing"><number>20</number></property>
+          <property name="spacing">
+           <number>20</number>
+          </property>
           <item>
            <widget class="QPushButton" name="btn_juchu">
             <property name="sizePolicy">
@@ -319,7 +394,10 @@ QStackedWidget QPushButton:disabled {
              </sizepolicy>
             </property>
             <property name="minimumSize">
-             <size><width>160</width><height>80</height></size>
+             <size>
+              <width>160</width>
+              <height>80</height>
+             </size>
             </property>
             <property name="text">
              <string>受注照会</string>
@@ -328,32 +406,56 @@ QStackedWidget QPushButton:disabled {
           </item>
           <item>
            <spacer name="spacer_sales_btns">
-            <property name="orientation"><enum>Qt::Horizontal</enum></property>
-            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
            </spacer>
           </item>
          </layout>
         </item>
         <item>
          <spacer name="spacer_sales_bottom">
-          <property name="orientation"><enum>Qt::Vertical</enum></property>
-          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
          </spacer>
         </item>
        </layout>
       </widget>
-      
-      <!-- ページ3：総務部 -->
       <widget class="QWidget" name="page_admin">
        <layout class="QVBoxLayout" name="verticalLayout_admin">
-        <property name="leftMargin"><number>30</number></property>
-        <property name="topMargin"><number>30</number></property>
-        <property name="rightMargin"><number>30</number></property>
-        <property name="bottomMargin"><number>30</number></property>
+        <property name="leftMargin">
+         <number>30</number>
+        </property>
+        <property name="topMargin">
+         <number>30</number>
+        </property>
+        <property name="rightMargin">
+         <number>30</number>
+        </property>
+        <property name="bottomMargin">
+         <number>30</number>
+        </property>
         <item>
          <widget class="QLabel" name="title_admin">
           <property name="font">
-           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+           <font>
+            <family>Meiryo</family>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
@@ -365,11 +467,16 @@ QStackedWidget QPushButton:disabled {
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_admin_btns">
-          <property name="spacing"><number>20</number></property>
+          <property name="spacing">
+           <number>20</number>
+          </property>
           <item>
            <widget class="QPushButton" name="btn_urikake">
             <property name="minimumSize">
-             <size><width>160</width><height>80</height></size>
+             <size>
+              <width>160</width>
+              <height>80</height>
+             </size>
             </property>
             <property name="text">
              <string>売掛金回収状況一覧</string>
@@ -379,7 +486,10 @@ QStackedWidget QPushButton:disabled {
           <item>
            <widget class="QPushButton" name="btn_uriage_utivake">
             <property name="minimumSize">
-             <size><width>160</width><height>80</height></size>
+             <size>
+              <width>160</width>
+              <height>80</height>
+             </size>
             </property>
             <property name="text">
              <string>納品書に基づく売上内訳</string>
@@ -388,31 +498,56 @@ QStackedWidget QPushButton:disabled {
           </item>
           <item>
            <spacer name="spacer_admin_btns">
-            <property name="orientation"><enum>Qt::Horizontal</enum></property>
-            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
            </spacer>
           </item>
          </layout>
         </item>
         <item>
          <spacer name="spacer_admin_bottom">
-          <property name="orientation"><enum>Qt::Vertical</enum></property>
-          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
          </spacer>
         </item>
        </layout>
       </widget>
-      
       <widget class="QWidget" name="page_factory">
        <layout class="QVBoxLayout" name="verticalLayout_factory">
-        <property name="leftMargin"><number>30</number></property>
-        <property name="topMargin"><number>30</number></property>
-        <property name="rightMargin"><number>30</number></property>
-        <property name="bottomMargin"><number>30</number></property>
+        <property name="leftMargin">
+         <number>30</number>
+        </property>
+        <property name="topMargin">
+         <number>30</number>
+        </property>
+        <property name="rightMargin">
+         <number>30</number>
+        </property>
+        <property name="bottomMargin">
+         <number>30</number>
+        </property>
         <item>
          <widget class="QLabel" name="title_factory">
           <property name="font">
-           <font><family>Meiryo</family><pointsize>14</pointsize><bold>true</bold></font>
+           <font>
+            <family>Meiryo</family>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
@@ -424,12 +559,19 @@ QStackedWidget QPushButton:disabled {
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_factory_btns">
-          <property name="spacing"><number>20</number></property>
+          <property name="spacing">
+           <number>20</number>
+          </property>
           <item>
            <widget class="QPushButton" name="btn_seizu">
-            <property name="enabled"><bool>false</bool></property>
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
-             <size><width>160</width><height>80</height></size>
+             <size>
+              <width>160</width>
+              <height>80</height>
+             </size>
             </property>
             <property name="text">
              <string>生産計画登録(開発中)</string>
@@ -438,16 +580,30 @@ QStackedWidget QPushButton:disabled {
           </item>
           <item>
            <spacer name="spacer_factory_btns">
-            <property name="orientation"><enum>Qt::Horizontal</enum></property>
-            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
            </spacer>
           </item>
          </layout>
         </item>
         <item>
          <spacer name="spacer_factory_bottom">
-          <property name="orientation"><enum>Qt::Vertical</enum></property>
-          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
          </spacer>
         </item>
        </layout>
