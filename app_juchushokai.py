@@ -16,9 +16,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QMessageBox,
     QDateEdit,
-    QPushButton,
-    QStyledItemDelegate,
-    QTextEdit  # ★ QTextEditを判定するためにインポート追加
+    QPushButton
 )
 
 # 共通ユーティリティのインポート
@@ -151,11 +149,11 @@ class MyWindow:
         self.ui.chk_juchu_date.toggled.connect(self.ui.date_juchu_date_from.setEnabled)
         self.ui.chk_juchu_date.toggled.connect(self.ui.date_juchu_date_to.setEnabled)
 
-        # ★【リファクタリング】画面上のすべてのQTextEdit（複数行テキスト欄）を自動探索し、
-        # 内側でタブが効いてしまう挙動を禁止（Tabキーで次のコントロールへ進むように統一）
-        all_text_edits = self.ui.findChildren(QTextEdit)
-        for text_edit in all_text_edits:
-            text_edit.setTabChangesFocus(True)
+        # ★【共通部品化】表示は維持したまま、ダミーボタンのTabフォーカスを無効化
+        common_utils.disable_dummy_buttons_tab_focus(self.ui)
+
+        # ★【共通部品化】すべての複数行テキストエリアでTabキー移動を有効化
+        common_utils.setup_text_edits_tab_focus(self.ui)
 
     def init_table_design(self):
         """明細表示用テーブル（QTableWidget）の初期デザイン・列幅を設定する"""
@@ -198,7 +196,6 @@ class MyWindow:
             elif hasattr(widget, "toPlainText"):
                 tanname_val = widget.toPlainText().strip()
 
-        # SQLクエリ文（ご指示通り完全未変更）
         sql = """
         SELECT
         JUH_DENDAT,
@@ -278,7 +275,6 @@ class MyWindow:
             self.clear_ui()
         finally:
             conn.close()
-
     def clear_ui(self):
         """【クリアボタン（btn_clear）押下時】画面を初期起動時の状態に戻し、表示データをすべて削除する"""
         self.current_group_idx = -1
@@ -428,13 +424,13 @@ class MyWindow:
 
             table.viewport().update()
 
+    def close_window(self):
+        """【共通関数呼び出し】親メニュー画面を安全に最前面表示させて自身を閉じる"""
+        common_utils.handle_window_close(self.ui, self.parent_menu, getattr(self, "parent_root", None))
+
     def closeEvent(self, event):
-        """画面を閉じる際、親メニュー画面を最前面に表示する"""
-        if self.parent_menu and hasattr(self.parent_menu, "show_menu"):
-            self.parent_menu.show_menu()
-        elif self.parent_root:
-            self.parent_root.deiconify()
-            self.parent_root.lift()
+        """×ボタンクリック時、または戻るボタンフック時の終了ロジック"""
+        self.close_window()
         event.accept()
 
 
@@ -455,13 +451,11 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
     font.setBold(True)
     item.setFont(font)
 
-    # 元のソースコードに記述されていた通りのセルの塗りつぶし・ブラシ属性(ID:12)を設定
     if is_header:
         item.setBackground(QColor("#94a3b8"))
         item.setForeground(QColor("#ffffff"))
     else:
         item.setBackground(QColor("#f1f5f9"))
-        # 元のプログラムのグリッド描画に必要だったデータロール設定
         item.setData(12, QBrush(QColor("#94a3b8")))
 
     if align_center or is_header:

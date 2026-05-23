@@ -5,18 +5,12 @@ from datetime import datetime
 
 import pandas as pd
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
-from copy import copy
-
-# PySide6（Qt）関連のインポート
 from PySide6.QtCore import QDate, Qt
-from PySide6.QtGui import QColor, QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PySide6.QtUiTools import loadUiType
 
-# プロジェクト共通モジュールのインポート
-import config
+# 共通ユーティリティのインポート
 import common_utils
 
 # Pythonに古い一時ファイル（.pyc）を作らせない設定
@@ -26,7 +20,7 @@ sys.dont_write_bytecode = True
 ui_path = os.path.join(os.path.dirname(__file__), "app_nouhin.ui")
 Ui_MainWindow, QMainWindowBase = loadUiType(ui_path)
 
-# --- リファクタリング：Excel列位置・集計項目のマジックナンバー定数化 ---
+# --- Excel列位置・集計項目のマジックナンバー定数化 ---
 COL_DATE = 1          # 日付列
 COL_TOTAL_AMOUNT = 7  # 売上合計列
 
@@ -50,19 +44,17 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
         if hasattr(self, "date_target_year_month"):
             self.date_target_year_month.setDate(QDate.currentDate())
 
-        # --- リファクタリング：Tabフォーカス（Policy）の最適化 ---
+        # Tabキーフォーカスの最適化（初期フォーカス）
         if hasattr(self, "date_target_year_month"):
             self.date_target_year_month.setFocus()
 
-        # 整理したダミーボタンのTabフォーカスを無効化し、非表示にする
-        dummy_buttons = ["btn_dummy_1", "btn_dummy_2", "btn_dummy_3", "btn_dummy_4"]
-        for btn_name in dummy_buttons:
-            if hasattr(self, btn_name):
-                btn = getattr(self, btn_name)
-                btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-                btn.setVisible(False)
+        # ★【共通部品化】ダミーボタンの表示は維持し、Tabフォーカスのみを一括無効化
+        common_utils.disable_dummy_buttons_tab_focus(self)
 
-        # --- リファクタリング：整理した新オブジェクト名でシグナル（イベント）接続 ---
+        # ★【共通部品化】すべての複数行テキストエリア（QTextEdit）でTabキー移動を自動有効化
+        common_utils.setup_text_edits_tab_focus(self)
+
+        # 整理したオブジェクト名でシグナル（イベント）接続
         if hasattr(self, "btn_back"):
             self.btn_back.clicked.connect(self.close_window)
         if hasattr(self, "btn_clear"):
@@ -76,15 +68,8 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
             self.date_target_year_month.setDate(QDate.currentDate())
 
     def close_window(self):
-        """【戻るボタン（btn_back）押下時】メニュー画面を再表示して自身を完全に閉じる"""
-        if self.parent_menu:
-            if hasattr(self.parent_menu, "deiconify"):
-                self.parent_menu.deiconify()
-            elif hasattr(self.parent_menu, "show_menu"):
-                self.parent_menu.show_menu()
-            elif hasattr(self.parent_menu, "show"):
-                self.parent_menu.show()
-        self.close()
+        """【共通関数呼び出し】親メニュー画面を安全に最前面表示させて自身を閉じる"""
+        common_utils.handle_window_close(self, self.parent_menu)
 
     def closeEvent(self, event):
         """【×ボタン押下時】戻るボタンと同じ終了処理をフックする"""
@@ -111,7 +96,7 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
 
         conn = common_utils.get_db_connection()
 
-        # --- リファクタリング：try...finally による安全な切断管理 ---
+        # try...finally による安全な切断管理
         try:
             # SQLクエリ文（ご指示通り完全未変更）
             query = """
@@ -145,6 +130,8 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
             wb = load_workbook(save_path)
             ws = wb.active
             s = common_utils.get_excel_styles()
+            from openpyxl.styles import Alignment
+            from copy import copy
             center_align = Alignment(horizontal='center', vertical='center', wrap_text=True)
 
             # 元の通り、2段目のヘッダー文字列を個別にセット
@@ -153,10 +140,11 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
             ws['J2'] = "数量"
             ws['K2'] = "金額"
 
-            # 全列のループ処理をして書式・罫線・数式を適用
-            for i, col in enumerate(ws.iter_cols(min_row=1, max_col=ws.max_column), 1):
+            # 【エラー修正】元の安定した2重ループによるセルアクセス構造に完全復元
+            for i in range(1, ws.max_column + 1):
                 col_letter = get_column_letter(i)
-                for cell in col:
+                for r in range(1, ws.max_row + 1):
+                    cell = ws.cell(row=r, column=i)
                     cell.border = s["border"]
 
                     # 1〜2行目（ヘッダー行）の装飾
@@ -183,7 +171,7 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
                         if i == COL_TOTAL_AMOUNT:
                             cell.value = f"=SUM(B{cell.row}:F{cell.row})"
 
-                # 列幅タイポの修復と最適化
+                # 列幅の最適化
                 if i == 1:
                     ws.column_dimensions[col_letter].width = 10
                 elif i in (3, 5):
@@ -205,8 +193,9 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
                 
                 # 結合の左上セルにタイトルを設定
                 for row in ws[cell_range]:
-                    top_left_cell = row[0]
-                    top_left_cell.value = title
+                    for cell in row:
+                        cell.value = title
+                        break
                     break
 
             # 最終行（合計行）の追加と装飾
@@ -233,7 +222,7 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "エラー", f"処理中にエラーが発生しました:\n{e}")
         finally:
-            # --- リファクタリング：例外発生時も確実にDBを切断する堅牢設計 ---
+            # 例外発生時も確実にDBを切断する堅牢設計
             conn.close()
 
 

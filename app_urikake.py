@@ -22,6 +22,10 @@ sys.dont_write_bytecode = True
 ui_main_path = os.path.join(os.path.dirname(__file__), "app_urikake.ui")
 Ui_MainWindow, QMainWindowBase = loadUiType(ui_main_path)
 
+# --- Excel列位置・集計項目のマジックナンバー定数化 ---
+COL_CODE = 2    # コード列
+COL_AMOUNT = 5  # 売上金額列
+
 
 class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
     """売掛金回収状況一覧 メイン画面クラス"""
@@ -30,41 +34,34 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         """初期化処理・コンポーネントのセットアップ"""
         super().__init__()
         self.parent_menu = parent_menu
+        self.init_ui()
+
+    def init_ui(self):
+        """UIの初期セットアップとシグナル接続"""
         self.setupUi(self)
         common_utils.set_common_window_icon(self)
 
         # 画面起動時の状態をセット (現在の年月)
         self.reset_to_initial_state()
 
-        # ボタンのメンバ変数を初期化
-        self.btn_back = None
-        self.btn_exe_setting = None
-        self.btn_clear = None
-        self.btn_exe_output = None
+        # Tabキーフォーカスの最適化（初期フォーカス）
+        if hasattr(self, "date_target_year_month"):
+            self.date_target_year_month.setFocus()
 
-        # 画面全体のすべてのボタンを走査し、文字を基準に役割を固定
-        all_buttons = self.findChildren(QPushButton)
-        for btn in all_buttons:
-            text = btn.text().strip()
-            if text == "戻る":
-                self.btn_back = btn
-            elif text == "設定":
-                self.btn_exe_setting = btn
-            elif text == "クリア":
-                self.btn_clear = btn
-            elif text == "出力":
-                self.btn_exe_output = btn
-            elif text == "":
-                btn.setVisible(False)
+        # ★【共通部品化】ダミーボタンの表示は維持し、Tabフォーカスのみを一括無効化
+        common_utils.disable_dummy_buttons_tab_focus(self)
 
-        # 各ボタンのイベント（シグナル）接続
-        if self.btn_back:
+        # ★【共通部品化】すべての複数行テキストエリア（QTextEdit）でTabキー移動を自動有効化
+        common_utils.setup_text_edits_tab_focus(self)
+
+        # 整理したオブジェクト名でシグナル（イベント）接続
+        if hasattr(self, "btn_back"):
             self.btn_back.clicked.connect(self.close_window)
-        if self.btn_exe_setting:
+        if hasattr(self, "btn_exe_setting"):
             self.btn_exe_setting.clicked.connect(self.show_setting_window)
-        if self.btn_clear:
+        if hasattr(self, "btn_clear"):
             self.btn_clear.clicked.connect(self.clear_fields)
-        if self.btn_exe_output:
+        if hasattr(self, "btn_exe_output"):
             self.btn_exe_output.clicked.connect(self.run_query)
 
     def reset_to_initial_state(self):
@@ -78,10 +75,8 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         self.reset_to_initial_state()
 
     def close_window(self):
-        """メニュー画面を再表示して自身を完全に閉じる"""
-        if self.parent_menu and hasattr(self.parent_menu, "show"):
-            self.parent_menu.show()
-        self.close()
+        """【共通関数呼び出し】親メニュー画面を安全に最前面表示させて自身を閉じる"""
+        common_utils.handle_window_close(self, self.parent_menu)
 
     def closeEvent(self, event):
         """×ボタンクリック時のイベント制御（メニュー再表示）"""
@@ -94,7 +89,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         self.setting_win.show()
 
     def run_query(self):
-        """出力ボタン (btn_excel) 押下時のExcel出力メインロジック"""
+        """出力ボタン (btn_exe_output) 押下時のExcel出力メインロジック"""
         if hasattr(self, "date_target_year_month"):
             qdate = self.date_target_year_month.date()
             y_in = str(qdate.year())
@@ -113,6 +108,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         file_name = f"売掛金回収状況一覧_{dt['year']} 年{dt['month']} 月.xlsx"
         save_path = f"{dt['desktop_path']}/{file_name}"
 
+        # try...finally による安全な切断管理
         try:
             # --- 1. 新規得意先の同期処理 ---
             sync_query = """
@@ -140,7 +136,6 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             ORDER BY sort, code
             """
             df = pd.read_sql(query, conn, params=(dt["start"], dt["end"]))
-            conn.close()
 
             if df.empty:
                 QMessageBox.information(self, "結果", "該当データはありませんでした。")
@@ -153,26 +148,26 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             wb = load_workbook(save_path)
             ws = wb.active
             
-            # ★ app_nouhin.py と同一のスタイル定義共通管理方式に統合
+            # スタイル定義共通管理方式
             s = common_utils.get_excel_styles()
             sort_col_idx = ws.max_column
 
-            # セル書式・スタイルの適用
-            for r_idx, row in enumerate(ws.iter_rows(min_row=1, max_row=ws.max_row), 1):
-                is_new = (ws.cell(row=r_idx, column=sort_col_idx).value == 9999)
-                for c_idx, cell in enumerate(row, 1):
+            # セル書式・スタイルの適用（安定したインデックス2重ループ構造）
+            for r in range(1, ws.max_row + 1):
+                is_new = (ws.cell(row=r, column=sort_col_idx).value == 9999)
+                for i in range(1, ws.max_column + 1):
+                    cell = ws.cell(row=r, column=i)
                     cell.border = s["border"]
                     cell.font = s["font"]
                     
-                    if r_idx == 1:
+                    if r == 1:
                         cell.fill = s["fill_header"]
                         cell.font = s["font_bold"]
                     elif is_new:
-                        # 新規行の背景色（薄緑）は固有定義
                         cell.fill = PatternFill(fgColor="E2EFDA", fill_type="solid")
 
-                    # 金額・コード列の3桁カンマ区切り（2列目と5列目）
-                    if c_idx in [2, 5] and r_idx > 1:
+                    # 金額・コード列の3桁カンマ区切り
+                    if i in [COL_CODE, COL_AMOUNT] and r > 1:
                         cell.number_format = "#,##0"
 
             # ソート用の一時列を削除
@@ -181,10 +176,10 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             # 列幅の自動調整
             for i in range(1, ws.max_column + 1):
                 col_letter = get_column_letter(i)
-                if i in [2, 5]:
+                if i in [COL_CODE, COL_AMOUNT]:
                     ws.column_dimensions[col_letter].width = 13.5
                 else:
-                    max_len = max((len(str(cell.value or '')) for cell in ws[col_letter]), default=0)
+                    max_len = max((len(str(ws.cell(row=r, column=i).value or '')) for r in range(1, ws.max_row + 1)), default=0)
                     ws.column_dimensions[col_letter].width = max(max_len + 4, 10) * 1.2
 
             # データ入力規則 (D列: 区分)
@@ -196,9 +191,9 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             # 合計行の追加
             last_row = ws.max_row + 1
             ws.cell(row=last_row, column=3).value = "合計"
-            sum_col = get_column_letter(5)
-            ws.cell(row=last_row, column=5).value = f"=SUM({sum_col}2:{sum_col}{last_row-1})"
-            ws.cell(row=last_row, column=5).number_format = "#,##0"
+            sum_col = get_column_letter(COL_AMOUNT)
+            ws.cell(row=last_row, column=COL_AMOUNT).value = f"=SUM({sum_col}2:{sum_col}{last_row-1})"
+            ws.cell(row=last_row, column=COL_AMOUNT).number_format = "#,##0"
 
             for c in range(1, 8):
                 cell = ws.cell(row=last_row, column=c)
@@ -213,6 +208,9 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             QMessageBox.critical(self, "エラー", "Excelを閉じてから実行してください。")
         except Exception as e:
             QMessageBox.critical(self, "エラー", f"失敗しました:\n{e}")
+        finally:
+            cursor.close()
+            conn.close()
 # 設定画面のUIファイルをロード
 ui_sub_path = os.path.join(os.path.dirname(__file__), "app_urikake_setting.ui")
 Ui_SettingDialog, _ = loadUiType(ui_sub_path)
@@ -235,6 +233,9 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
             parent_geo = self.parent_win.geometry()
             self.move(parent_geo.x() + 30, parent_geo.y() + 30)
 
+        # ★【共通部品化】設定サブ画面内のすべての QTextEdit で Tab フォーカス移動を有効化
+        common_utils.setup_text_edits_tab_focus(self)
+
         # キー入力とフォーカス移動の制御用イベントフィルタを設定
         if hasattr(self, "text_tokcode"):
             self.text_tokcode.installEventFilter(self)
@@ -256,7 +257,6 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
 
     def eventFilter(self, obj, event):
         """QTextEditでのEnter/Tabキーおよびフォーカスアウトの挙動を完全に制御する"""
-        # キー入力時の制御
         if event.type() == event.Type.KeyPress:
             # 得意先コード欄での制御
             if obj == self.text_tokcode:
@@ -277,7 +277,6 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
                         self.chk_uriagezero.setFocus()
                     return True
 
-        # フォーカスが外れた瞬間に選択（反転）状態を安全に解除する
         elif event.type() == event.Type.FocusOut:
             if hasattr(obj, "textCursor"):
                 cursor = obj.textCursor()
@@ -299,22 +298,26 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
         self.text_tokcode.blockSignals(False)
 
         conn = common_utils.get_db_connection()
-        query = "SELECT TOK_TOKNM1, sort, flag FROM Table_2 LEFT JOIN T_TOKMST ON code = TOK_TOKCD WHERE code = ?"
-        res = conn.execute(query, (code_8,)).fetchone()
-        conn.close()
-
-        if res:
-            cust_name = res[0] if res[0] else ""
-            curr_sort = res[1] if res[1] is not None else ""
-            curr_flag = res[2]
-            self.data_tokname.setText(cust_name)
-            if hasattr(self, "text_order"):
-                self.text_order.blockSignals(True)
-                self.text_order.setPlainText(str(curr_sort))
-                self.text_order.blockSignals(False)
-            self.chk_uriagezero.setChecked(True if curr_flag == 0 else False)
-        else:
-            QMessageBox.warning(self, "未登録", "得意先が見つかりません。")
+        
+        # try...finally による安全な切断管理
+        try:
+            query = "SELECT TOK_TOKNM1, sort, flag FROM Table_2 LEFT JOIN T_TOKMST ON code = TOK_TOKCD WHERE code = ?"
+            res = conn.execute(query, (code_8,)).fetchone()
+            
+            if res:
+                cust_name = res[0] if res[0] else ""
+                curr_sort = res[1] if res[1] is not None else ""
+                curr_flag = res[2]
+                self.data_tokname.setText(cust_name)
+                if hasattr(self, "text_order"):
+                    self.text_order.blockSignals(True)
+                    self.text_order.setPlainText(str(curr_sort))
+                    self.text_order.blockSignals(False)
+                self.chk_uriagezero.setChecked(True if curr_flag == 0 else False)
+            else:
+                QMessageBox.warning(self, "未登録", "得意先が見つかりません。")
+        finally:
+            conn.close()
 
     def clear_fields(self):
         """クリアボタン (btn_clear) 処理"""
@@ -344,9 +347,11 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
 
         new_sort = int(new_sort_input)
         new_flag = 0 if self.chk_uriagezero.isChecked() else 1
+        
         conn = common_utils.get_db_connection()
         cursor = conn.cursor()
 
+        # try...finally による安全な切断管理
         try:
             cursor.execute("SELECT ISNULL(MAX(sort), 0) FROM Table_2 WHERE sort < 9999")
             max_sort_res = cursor.fetchone()
@@ -382,6 +387,7 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
             conn.rollback()
             QMessageBox.critical(self, "エラー", f"失敗しました: {e}")
         finally:
+            cursor.close()
             conn.close()
 
 
