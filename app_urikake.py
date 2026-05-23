@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import datetime
+
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import Border, Font, PatternFill, Side
@@ -26,10 +27,10 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
     """売掛金回収状況一覧 メイン画面クラス"""
 
     def __init__(self, parent_menu=None):
+        """初期化処理・コンポーネントのセットアップ"""
         super().__init__()
         self.parent_menu = parent_menu
         self.setupUi(self)
-
         common_utils.set_common_window_icon(self)
 
         # 画面起動時の状態をセット (現在の年月)
@@ -83,7 +84,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         self.close()
 
     def closeEvent(self, event):
-        """×ボタン対策"""
+        """×ボタンクリック時のイベント制御（メニュー再表示）"""
         self.close_window()
         event.accept()
 
@@ -109,34 +110,34 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
 
         conn = common_utils.get_db_connection()
         cursor = conn.cursor()
-        file_name = f"売掛金回収状況一覧_{dt['year']}年{dt['month']}月.xlsx"
+        file_name = f"売掛金回収状況一覧_{dt['year']} 年{dt['month']} 月.xlsx"
         save_path = f"{dt['desktop_path']}/{file_name}"
 
         try:
             # --- 1. 新規得意先の同期処理 ---
             sync_query = """
-                INSERT INTO Table_2 (code, sort, flag)
-                SELECT TOK_TOKCD, 9999, 1 FROM T_TOKMST
-                WHERE NOT EXISTS (SELECT 1 FROM Table_2 WHERE Table_2.code = T_TOKMST.TOK_TOKCD)
+            INSERT INTO Table_2 (code, sort, flag)
+            SELECT TOK_TOKCD, 9999, 1 FROM T_TOKMST
+            WHERE NOT EXISTS (SELECT 1 FROM Table_2 WHERE Table_2.code = T_TOKMST.TOK_TOKCD)
             """
             cursor.execute(sync_query)
             conn.commit()
 
             # --- 2. メインのデータ抽出 ---
             query = """
-                SELECT TOK_SIMEBI AS 締日, CAST(code AS INT) AS コード, TOK_TOKNM1 AS 得意先名,
-                       NULL AS 区分, ISNULL(SEK_URIAGE, 0) + ISNULL(SEK_TAX, 0) AS 売上金額,
-                       NULL AS 入金額, NULL AS 備考, sort AS _sort_val
-                FROM Table_2
-                LEFT JOIN T_TOKMST ON code = TOK_TOKCD
-                LEFT JOIN (
-                    SELECT SEK_SCODE, SEK_URIAGE, SEK_TAX, SES_SIMEDAT FROM T_SESDAT
-                    LEFT JOIN T_SEKDAT ON SES_KCODE = SEK_KCODE AND SES_SIMENO = SEK_SIMENO
-                    LEFT JOIN T_TOKMST ON SEK_KCODE = TOK_KCODE AND SEK_SCODE = TOK_TOKCD
-                    WHERE SES_SIMEDAT BETWEEN ? AND ?
-                ) AS a ON code = SEK_SCODE
-                WHERE (Table_2.flag = 1) OR (Table_2.flag = 0 AND (ISNULL(SEK_URIAGE, 0) + ISNULL(SEK_TAX, 0) <> 0))
-                ORDER BY sort, code
+            SELECT TOK_SIMEBI AS 締日, CAST(code AS INT) AS コード, TOK_TOKNM1 AS 得意先名,
+            NULL AS 区分, ISNULL(SEK_URIAGE, 0) + ISNULL(SEK_TAX, 0) AS 売上金額,
+            NULL AS 入金額, NULL AS 備考, sort AS _sort_val
+            FROM Table_2
+            LEFT JOIN T_TOKMST ON code = TOK_TOKCD
+            LEFT JOIN (
+                SELECT SEK_SCODE, SEK_URIAGE, SEK_TAX, SES_SIMEDAT FROM T_SESDAT
+                LEFT JOIN T_SEKDAT ON SES_KCODE = SEK_KCODE AND SES_SIMENO = SEK_SIMENO
+                LEFT JOIN T_TOKMST ON SEK_KCODE = TOK_KCODE AND SEK_SCODE = TOK_TOKCD
+                WHERE SES_SIMEDAT BETWEEN ? AND ?
+            ) AS a ON code = SEK_SCODE
+            WHERE (Table_2.flag = 1) OR (Table_2.flag = 0 AND (ISNULL(SEK_URIAGE, 0) + ISNULL(SEK_TAX, 0) <> 0))
+            ORDER BY sort, code
             """
             df = pd.read_sql(query, conn, params=(dt["start"], dt["end"]))
             conn.close()
@@ -151,7 +152,6 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
 
             wb = load_workbook(save_path)
             ws = wb.active
-
             side_thin = Side(border_style="thin", color="000000")
             border_all = Border(left=side_thin, right=side_thin, top=side_thin, bottom=side_thin)
             font_normal = Font(name="MS Gothic", size=11, bold=False)
@@ -159,7 +159,6 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             fill_header = PatternFill(fgColor="D9E1F2", fill_type="solid")
             fill_total = PatternFill(fgColor="F2F2F2", fill_type="solid")
             fill_new = PatternFill(fgColor="E2EFDA", fill_type="solid")
-
             sort_col_idx = ws.max_column
 
             # セル書式・スタイルの適用
@@ -216,12 +215,6 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             QMessageBox.critical(self, "エラー", "Excelを閉じてから実行してください。")
         except Exception as e:
             QMessageBox.critical(self, "エラー", f"失敗しました:\n{e}")
-
-# 設定画面のUIファイルをロード
-ui_sub_path = os.path.join(os.path.dirname(__file__), "app_urikake_setting.ui")
-Ui_SettingDialog, _ = loadUiType(ui_sub_path)
-
-
 # 設定画面のUIファイルをロード
 ui_sub_path = os.path.join(os.path.dirname(__file__), "app_urikake_setting.ui")
 Ui_SettingDialog, _ = loadUiType(ui_sub_path)
@@ -231,22 +224,15 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
     """出力設定変更サブ画面 クラス（デザイン維持・挙動完全安定化版）"""
 
     def __init__(self, parent):
+        """初期化処理・ウィンドウの配置とイベント設定"""
         super().__init__(parent)
         self.parent_win = parent
         self.setupUi(self)
 
-        # 画面位置の初期化
-        self.resize(436, 286)
-        screen_geo = self.screen().geometry()
-        x = (screen_geo.width() - 436) // 2
-        y = (screen_geo.height() - 286) // 2
-        self.move(x, y)
-
         # 子画面として最前面に固定
         self.setWindowModality(Qt.WindowModality.WindowModal)
 
-        # 【改善】デザインを変更するスタイルシートはすべて廃止
-        # キー入力とフォーカス移動の制御用イベントフィルタのみを設定
+        # キー入力とフォーカス移動の制御用イベントフィルタを設定
         if hasattr(self, "text_tokcd"):
             self.text_tokcd.installEventFilter(self)
         if hasattr(self, "text_sort"):
@@ -276,7 +262,7 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
                     if hasattr(self, "text_sort"):
                         self.text_sort.setFocus()
                         self.text_sort.selectAll()
-                    return True  # 改行やタブの挿入を防ぐ
+                    return True
 
             # 表示順欄での制御
             elif obj == self.text_sort:
@@ -288,12 +274,12 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
                         self.chk_uriagezero.setFocus()
                     return True
 
-        # 【新規】フォーカスが外れた（別のコントロールに移った）瞬間に反転を安全に解除する
+        # フォーカスが外れた瞬間に選択（反転）状態を安全に解除する
         elif event.type() == event.Type.FocusOut:
             if hasattr(obj, "textCursor"):
                 cursor = obj.textCursor()
                 if cursor.hasSelection():
-                    cursor.clearSelection()  # デザインを崩さずに青い選択状態だけを解除
+                    cursor.clearSelection()
                     obj.setTextCursor(cursor)
 
         return super().eventFilter(obj, event)
@@ -305,7 +291,6 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
             return
 
         code_8 = "".join(filter(str.isdigit, raw_code)).zfill(8)
-
         self.text_tokcd.blockSignals(True)
         self.text_tokcd.setPlainText(code_8)
         self.text_tokcd.blockSignals(False)
@@ -319,14 +304,11 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
             cust_name = res[0] if res[0] else ""
             curr_sort = res[1] if res[1] is not None else ""
             curr_flag = res[2]
-
             self.label_tokname.setText(cust_name)
-
             if hasattr(self, "text_sort"):
                 self.text_sort.blockSignals(True)
                 self.text_sort.setPlainText(str(curr_sort))
                 self.text_sort.blockSignals(False)
-
             self.chk_uriagezero.setChecked(True if curr_flag == 0 else False)
         else:
             QMessageBox.warning(self, "未登録", "得意先が見つかりません。")
@@ -337,12 +319,10 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
             self.text_tokcd.blockSignals(True)
             self.text_tokcd.clear()
             self.text_tokcd.blockSignals(False)
-
         if hasattr(self, "text_sort"):
             self.text_sort.blockSignals(True)
             self.text_sort.clear()
             self.text_sort.blockSignals(False)
-
         self.label_tokname.setText("")
         self.chk_uriagezero.setChecked(False)
         self.text_tokcd.setFocus()
@@ -361,24 +341,24 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
 
         new_sort = int(new_sort_input)
         new_flag = 0 if self.chk_uriagezero.isChecked() else 1
-
         conn = common_utils.get_db_connection()
         cursor = conn.cursor()
+
         try:
             cursor.execute("SELECT ISNULL(MAX(sort), 0) FROM Table_2 WHERE sort < 9999")
             max_sort_res = cursor.fetchone()
             max_sort = max_sort_res[0] if max_sort_res else 0
 
             if new_sort != 9999 and new_sort > max_sort:
-                QMessageBox.critical(self, "入力エラー", f"表示順が大きすぎます。\n最大値は {max_sort} です。")
+                QMessageBox.critical(self, "入力エラー", f"表示順が大きすぎます。\n 最大値は {max_sort} です。")
                 return
 
             cursor.execute("SELECT sort FROM Table_2 WHERE code = ?", (code,))
             old_sort_res = cursor.fetchone()
             if not old_sort_res:
                 return
-            old_sort = old_sort_res[0]
 
+            old_sort = old_sort_res[0]
             if old_sort != new_sort:
                 if old_sort < 9999 and new_sort < 9999:
                     if old_sort < new_sort:
@@ -392,7 +372,7 @@ class SettingWindow(QMainWindow, Ui_SettingDialog):
 
             cursor.execute("UPDATE Table_2 SET sort = ?, flag = ? WHERE code = ?", (new_sort, new_flag, code))
             conn.commit()
-            QMessageBox.information(self, "完了", f"得意先コード: {code}\n設定を更新しました。")
+            QMessageBox.information(self, "完了", f"得意先コード: {code}\n 設定を更新しました。")
             self.on_enter()
             self.text_tokcd.setFocus()
         except Exception as e:
@@ -407,4 +387,3 @@ if __name__ == "__main__":
     window = UrikakeWindow()
     window.show()
     sys.exit(app.exec())
-
