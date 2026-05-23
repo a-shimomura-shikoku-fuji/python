@@ -4,7 +4,7 @@ import pandas as pd
 import common_utils
 
 from PySide6.QtCore import Qt, QDate
-from PySide6.QtGui import QBrush, QColor, QFont, QIcon
+from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPen
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QApplication,
@@ -15,9 +15,9 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QMessageBox,
     QDateEdit,
-    QPushButton
+    QPushButton,
+    QStyledItemDelegate
 )
-
 
 class MyWindow:
     """受注照会システム メインウィンドウ管理クラス"""
@@ -41,33 +41,33 @@ class MyWindow:
         self.ui = loader.load(ui_path)
 
         # 2. ウィンドウ外観（サイズ・タイトル・アイコン）の設定
-        self.ui.setWindowTitle("受注照会システム")
-        self.ui.setWindowIcon(QIcon("my_logo.ico"))
+        self.ui.setWindowTitle("受注照会")
+        common_utils.set_common_window_icon(self.ui)
         self.ui.setFixedSize(self.ui.size()) 
 
         # クローズイベントをこのクラスの closeEvent メソッドに完全にフックする
         self.ui.closeEvent = self.closeEvent
 
         # 3. イベントシグナルの連携
-        if hasattr(self.ui, "pushButton_2"):
-            try: self.ui.pushButton_2.clicked.disconnect()
+        if hasattr(self.ui, "btn_exe_prev"):
+            try: self.ui.btn_exe_prev.clicked.disconnect()
             except: pass
-            self.ui.pushButton_2.clicked.connect(self.on_prevButton_click)
+            self.ui.btn_exe_prev.clicked.connect(self.on_prevButton_click)
 
-        if hasattr(self.ui, "pushButton_3"):
-            try: self.ui.pushButton_3.clicked.disconnect()
+        if hasattr(self.ui, "btn_exe_next"):
+            try: self.ui.btn_exe_next.clicked.disconnect()
             except: pass
-            self.ui.pushButton_3.clicked.connect(self.on_nextButton_click)
+            self.ui.btn_exe_next.clicked.connect(self.on_nextButton_click)
 
-        if hasattr(self.ui, "pushButton_9"):
-            try: self.ui.pushButton_9.clicked.disconnect()
+        if hasattr(self.ui, "btn_exe_inquiry"):
+            try: self.ui.btn_exe_inquiry.clicked.disconnect()
             except: pass
-            self.ui.pushButton_9.clicked.connect(self.load_initial_data)
+            self.ui.btn_exe_inquiry.clicked.connect(self.load_initial_data)
 
-        if hasattr(self.ui, "pushButton_10"):
-            try: self.ui.pushButton_10.clicked.disconnect()
+        if hasattr(self.ui, "btn_clear"):
+            try: self.ui.btn_clear.clicked.disconnect()
             except: pass
-            self.ui.pushButton_10.clicked.connect(self.clear_ui)
+            self.ui.btn_clear.clicked.connect(self.clear_ui)
 
         # 4. 日付・テーブル類の接続と、強制初期化
         self.init_ui()              
@@ -101,23 +101,26 @@ class MyWindow:
             QDateEdit:disabled { color: #bbbbbb; background-color: #f1f5f9; }
         """
 
-        for widget in [self.ui.date_Nouki_F, self.ui.date_Nouki_T, self.ui.date_Dendat_F, self.ui.date_Dendat_T]:
+        for widget in [self.ui.date_nouki_from, self.ui.date_nouki_to, self.ui.date_juchu_date_from, self.ui.date_juchu_date_to]:
             widget.setDisplayFormat("yyyy/MM/dd")
             widget.setStyleSheet(disabled_style)
             try: widget.dateChanged.disconnect()
             except: pass
 
         # シグナル重複接続をリセット
-        try: self.ui.chk_Nouki.toggled.disconnect()
+        try: self.ui.chk_nouki.toggled.disconnect()
         except: pass
-        try: self.ui.chk_Dendat.toggled.disconnect()
+        try: self.ui.chk_juchu_date.toggled.disconnect()
         except: pass
 
         # チェックボックスと日付エリアの有効・無効化の連動
-        self.ui.chk_Nouki.toggled.connect(self.ui.date_Nouki_F.setEnabled)
-        self.ui.chk_Nouki.toggled.connect(self.ui.date_Nouki_T.setEnabled)
-        self.ui.chk_Dendat.toggled.connect(self.ui.date_Dendat_F.setEnabled)
-        self.ui.chk_Dendat.toggled.connect(self.ui.date_Dendat_T.setEnabled)
+        self.ui.chk_nouki.toggled.connect(self.ui.date_nouki_from.setEnabled)
+        self.ui.chk_nouki.toggled.connect(self.ui.date_nouki_to.setEnabled)
+        self.ui.chk_juchu_date.toggled.connect(self.ui.date_juchu_date_from.setEnabled)
+        self.ui.chk_juchu_date.toggled.connect(self.ui.date_juchu_date_to.setEnabled)
+
+    # 1. まず、クラスの定義（MyWindowの上など、あるいは関数の直前）に罫線を描画するクラスを追加します。
+    
 
     def init_table_design(self):
         """明細表示用テーブル（QTableWidget）の初期デザイン・列幅を設定する"""
@@ -136,7 +139,7 @@ class MyWindow:
         ]
         table.setHorizontalHeaderLabels(headers)
 
-        table.setColumnWidth(0, 100)
+        table.setColumnWidth(0, 115)
         table.setColumnWidth(1, 180)
         table.setColumnWidth(2, 200)
         table.setColumnWidth(3, 130)
@@ -151,8 +154,8 @@ class MyWindow:
         print("【ログ】データの読み込みを開始します。")
 
         tyuban_val = ""
-        if hasattr(self.ui, "text_tyuban"):
-            widget = self.ui.text_tyuban
+        if hasattr(self.ui, "text_chuban"):
+            widget = self.ui.text_chuban
             if hasattr(widget, "text"):
                 tyuban_val = widget.text().strip()
             elif hasattr(widget, "toPlainText"):
@@ -194,11 +197,11 @@ class MyWindow:
         ORDER BY JUH_DENDAT, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD
         """
         
-        nouki_f_val = self.ui.date_Nouki_F.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
-        nouki_t_val = self.ui.date_Nouki_T.date().toString("yyyy-MM-dd") if self.ui.chk_Nouki.isChecked() else ""
+        nouki_f_val = self.ui.date_nouki_from.date().toString("yyyy-MM-dd") if self.ui.chk_nouki.isChecked() else ""
+        nouki_t_val = self.ui.date_nouki_to.date().toString("yyyy-MM-dd") if self.ui.chk_nouki.isChecked() else ""
         
-        dendat_f_val = self.ui.date_Dendat_F.date().toString("yyyy-MM-dd") if self.ui.chk_Dendat.isChecked() else ""
-        dendat_t_val = self.ui.date_Dendat_T.date().toString("yyyy-MM-dd") if self.ui.chk_Dendat.isChecked() else ""
+        dendat_f_val = self.ui.date_juchu_date_from.date().toString("yyyy-MM-dd") if self.ui.chk_juchu_date.isChecked() else ""
+        dendat_t_val = self.ui.date_juchu_date_to.date().toString("yyyy-MM-dd") if self.ui.chk_juchu_date.isChecked() else ""
 
         sql_params = [
             nouki_f_val, nouki_f_val, nouki_t_val,
@@ -256,12 +259,12 @@ class MyWindow:
         self.grouped_keys = []
         self.all_details_df = None
 
-        labels_to_clear = ["label_dendat", "label_tyuban", "label_nouki", "label_toknm1", "label_tanname", "label_Count"]
+        labels_to_clear = ["data_juchu_date", "data_tok_chuban", "data_nouki", "data_tokname", "data_tanname", "word_count"]
         for label_name in labels_to_clear:
             if hasattr(self.ui, label_name):
                 getattr(self.ui, label_name).setText("")
 
-        inputs_to_clear = ["text_tyuban", "text_tanname"]
+        inputs_to_clear = ["text_chuban", "text_tanname"]
         for input_name in inputs_to_clear:
             if hasattr(self.ui, input_name):
                 target = getattr(self.ui, input_name)
@@ -288,15 +291,15 @@ class MyWindow:
 
         # 日付選択の初期値とグレーアウトの確実な同期
         today = QDate.currentDate()
-        self.ui.date_Nouki_F.setDate(today)
-        self.ui.date_Nouki_T.setDate(today)
-        self.ui.date_Dendat_F.setDate(today.addMonths(-1))
-        self.ui.date_Dendat_T.setDate(today)
+        self.ui.date_nouki_from.setDate(today)
+        self.ui.date_nouki_to.setDate(today)
+        self.ui.date_juchu_date_from.setDate(today.addMonths(-1))
+        self.ui.date_juchu_date_to.setDate(today)
 
         # 一度TrueにしてからFalseに落とすことで、Qt内部のトグルイベントを確実に発火させグレーアウトさせる
-        self.ui.chk_Nouki.setChecked(True)
-        self.ui.chk_Dendat.setChecked(True)
-        self.ui.chk_Dendat.setChecked(False)
+        self.ui.chk_nouki.setChecked(True)
+        self.ui.chk_juchu_date.setChecked(True)
+        self.ui.chk_juchu_date.setChecked(False)
 
     def on_nextButton_click(self):
         """「次へ」ボタン押下時、インデックスを1つ進めて次の伝票を表示する"""
@@ -325,10 +328,10 @@ class MyWindow:
         if not self.grouped_keys or self.all_details_df is None:
             return
 
-        if hasattr(self.ui, "label_Count"):
+        if hasattr(self.ui, "word_count"):
             total_count = len(self.grouped_keys)
             current_num = self.current_group_idx + 1
-            self.ui.label_Count.setText(f"{current_num} / {total_count} 件")
+            self.ui.word_count.setText(f"{current_num} / {total_count} 件")
 
         current_key = self.grouped_keys[self.current_group_idx]
         key_dendat, key_tyuban, key_nouki, key_toknm1, key_tancd = current_key
@@ -358,11 +361,11 @@ class MyWindow:
                 return str(val).strip()
 
         mapping = {
-            "label_dendat": format_to_date(key_dendat),
-            "label_tyuban": str(key_tyuban).strip() if pd.notna(key_tyuban) and str(key_tyuban) != "nan" else "",
-            "label_nouki": format_to_date(key_nouki),
-            "label_toknm1": str(key_toknm1).strip() if pd.notna(key_toknm1) and str(key_toknm1) != "nan" else "",
-            "label_tanname": str(first_row.get("TAN_NAME")).strip() if pd.notna(first_row.get("TAN_NAME")) else "",
+            "data_juchu_date": format_to_date(key_dendat),
+            "data_tok_chuban": str(key_tyuban).strip() if pd.notna(key_tyuban) and str(key_tyuban) != "nan" else "",
+            "data_nouki": format_to_date(key_nouki),
+            "data_tokname": str(key_toknm1).strip() if pd.notna(key_toknm1) and str(key_toknm1) != "nan" else "",
+            "data_tanname": str(first_row.get("TAN_NAME")).strip() if pd.notna(first_row.get("TAN_NAME")) else "",
         }
 
         for label_name, val in mapping.items():
@@ -435,12 +438,18 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
     item = QTableWidgetItem(text)
     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
+    # ヘッダーだけでなく、すべてのデータセルも太文字にする
+    font = QFont()
+    font. setBold(True)
+    item. setFont(font)
+    
     if is_header:
-        item.setBackground(QColor("#94a3b8"))
-        item.setForeground(QColor("#ffffff"))
-        font = QFont()
-        font.setBold(True)
-        item.setFont(font)
+        item. setBackground( QColor("#94a3b8"))
+        item. setForeground( QColor("#ffffff"))
+    else:
+        item. setBackground( QColor("#f1f5f9"))
+        from PySide6.QtGui import QBrush
+        item.setData(12, QBrush( QColor( "#94a3b8"))) 
 
     if align_center or is_header:
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
