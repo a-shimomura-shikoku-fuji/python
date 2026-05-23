@@ -17,22 +17,49 @@
    <string notr="true">QMainWindow { background-color: #f8fafc; }
 QFrame#Sidebar { background-color: #0f172a; }
 
-/* 左側ナビゲーションボタン */
+/* 左側ナビゲーションボタン（通常時） */
 QFrame#Sidebar QPushButton {
-    color: #cbd5e1 !important; 
-    background-color: transparent !important; 
+    color: #cbd5e1; 
+    background-color: transparent; 
     text-align: left;
-    padding-left: 15px; 
-    border: none !important; 
+    padding-left: 14px; 
+    /* 💡 OS標準の立体枠や背景を完全にシャットアウトするため、1pxの透明な線を明示します */
+    border: 1px solid transparent; 
     border-radius: 6px;
 }
-QFrame#Sidebar QPushButton:hover { color: #ffffff !important; background-color: #1e293b !important; }
-QFrame#Sidebar QPushButton:checked { color: #ffffff !important; background-color: #2563eb !important; font-weight: bold; }
+
+/* 💡 ホバー時は背景色を透明なままとし、指定した1本の枠線（#1e293b）のみを美しく描画します */
+QFrame#Sidebar QPushButton:hover { 
+    color: #ffffff; 
+    background-color: transparent; 
+    border: 1px solid #1e293b;     
+}
+
+/* 💡 Tabキーで選択された時（フォーカス時）も、OSの枠と重ならないよう青い1本の枠線でスマートに表現 */
+QFrame#Sidebar QPushButton:focus { 
+    color: #ffffff; 
+    background-color: transparent; 
+    border: 1px solid #2563eb;     
+}
+
+/* 左側ナビゲーションボタン（選択・チェックされたアクティブ状態） */
+/* 💡 ここでも OS標準の反転と競合させないよう、背景と枠線を鮮やかなブルー（#2563eb）で完全に固定します */
+QFrame#Sidebar QPushButton:checked { 
+    color: #ffffff; 
+    background-color: #2563eb; 
+    border: 1px solid #2563eb; 
+    font-weight: bold; 
+}
+/* チェックされているボタンの上にマウスが乗った時は、青色の背景をキープさせます */
+QFrame#Sidebar QPushButton:checked:hover {
+    background-color: #2563eb;
+    border: 1px solid #2563eb;
+}
 
 /* 右側業務機能ボタン（営業技術部・総務部共通の洗練されたネイビーデザイン） */
 QStackedWidget QPushButton {
     background-color: #1e3a8a;
-    color: #ffffff !important;
+    color: #ffffff;
     border-radius: 6px;
     font-size: 11pt;
     font-weight: bold;
@@ -40,14 +67,15 @@ QStackedWidget QPushButton {
 }
 QStackedWidget QPushButton:hover, QStackedWidget QPushButton:focus {
     background-color: #2563eb;
-    color: #ffffff !important;
+    color: #ffffff;
     border: 1px solid #60a5fa;
 }
 QStackedWidget QPushButton:disabled {
     background-color: #f1f5f9;
-    color: #94a3b8 !important;
+    color: #94a3b8;
     border: 1px solid #e2e8f0;
-}</string>
+}
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_Main">
@@ -255,7 +283,32 @@ QStackedWidget QPushButton:disabled {
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="styleSheet">
-       <string notr="true">background-color: #f8fafc;</string>
+       <string notr="true">/* ① 右側エリア(QStackedWidget)の中にある各システムボタンの通常デザイン（白文字ネイビー） */
+QStackedWidget QPushButton#btn_JuchuShokai, 
+QStackedWidget QPushButton#btn_Urikake, 
+QStackedWidget QPushButton#btn_Nouhin {
+    color: #ffffff;
+    background-color: #1e3a8a;
+    border: 1px solid #172554;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+/* ② マウスを乗せた時（ホバー）、またはTabキーが当たっている時（フォーカス）の完璧なカラーチェンジ */
+QStackedWidget QPushButton#btn_JuchuShokai:hover, 
+QStackedWidget QPushButton#btn_Urikake:hover, 
+QStackedWidget QPushButton#btn_Nouhin:hover,
+QStackedWidget QPushButton#btn_JuchuShokai:focus, 
+QStackedWidget QPushButton#btn_Urikake:focus, 
+QStackedWidget QPushButton#btn_Nouhin:focus {
+    background-color: #2563eb; /* 鮮やかな明るい青へ変化 */
+    border-color: #60a5fa;     /* 枠線を水色へ変化 */
+}
+
+</string>
+      </property>
+      <property name="currentIndex">
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page_common">
        <layout class="QVBoxLayout" name="verticalLayout_common">
@@ -386,7 +439,7 @@ QStackedWidget QPushButton:disabled {
            <number>20</number>
           </property>
           <item>
-           <widget class="QPushButton" name="btn_juchu">
+           <widget class="QPushButton" name="btn_JuchuShokai">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -484,7 +537,7 @@ QStackedWidget QPushButton:disabled {
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btn_uriage_utivake">
+           <widget class="QPushButton" name="btn_Nouhin">
             <property name="minimumSize">
              <size>
               <width>160</width>
@@ -562,22 +615,6 @@ QStackedWidget QPushButton:disabled {
           <property name="spacing">
            <number>20</number>
           </property>
-          <item>
-           <widget class="QPushButton" name="btn_seizu">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>160</width>
-              <height>80</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>生産計画登録(開発中)</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <spacer name="spacer_factory_btns">
             <property name="orientation">
