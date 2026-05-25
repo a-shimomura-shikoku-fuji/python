@@ -21,8 +21,10 @@ def set_common_window_icon(window_obj, icon_name="my_logo.ico"):
     指定されたウィンドウオブジェクトに共通のアイコンを設定する。
     """
     try:
-        # 実行ファイルパスを基に安全に読み込み
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), icon_name)
+        # assets フォルダ内のアイコンファイルを指定
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(current_dir, "assets", icon_name)
+        
         if os.path.exists(icon_path):
             window_obj.setWindowIcon(QIcon(icon_path))
     except Exception as e:
@@ -63,3 +65,39 @@ def get_excel_styles():
 def get_db_connection():
     """データベースに接続する"""
     return pyodbc.connect(config.CONN_STR)
+
+def handle_window_close(current_window, parent_menu=None, parent_root=None):
+    """【共通】子画面が閉じる際に親画面（メニュー）を安全に再表示する共通処理"""
+    if parent_menu:
+        if hasattr(parent_menu, "show"):
+            parent_menu.show()
+        elif hasattr(parent_menu, "show_menu"):
+            parent_menu.show_menu()
+        elif hasattr(parent_menu, "deiconify"):
+            parent_menu.deiconify()
+    elif parent_root:
+        if hasattr(parent_root, "deiconify"):
+            parent_root.deiconify()
+        if hasattr(parent_root, "lift"):
+            parent_root.lift()
+    current_window.close()
+
+
+def disable_dummy_buttons_tab_focus(window_ui, prefix="btn_dummy_"):
+    """【共通】特定の接頭辞を持つダミーボタンを見つけた場合、Tabキーでの選択のみをスキップさせる（画面上には表示したまま）"""
+    from PySide6.QtWidgets import QPushButton
+    from PySide6.QtCore import Qt
+    
+    all_buttons = window_ui.findChildren(QPushButton)
+    for btn in all_buttons:
+        if btn.objectName().startswith(prefix):
+            btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+
+def setup_text_edits_tab_focus(window_obj):
+    """【共通】画面内のすべての QTextEdit で Tab キーによるフォーカス移動を有効化する"""
+    from PySide6.QtWidgets import QTextEdit
+    all_edits = window_obj.findChildren(QTextEdit)
+    for edit in all_edits:
+        edit.setTabChangesFocus(True)
+
