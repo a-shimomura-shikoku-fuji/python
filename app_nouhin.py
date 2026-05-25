@@ -98,7 +98,7 @@ class NouhinWindow(QMainWindowBase, Ui_MainWindow):
         desktop_path = os.path.expanduser("~/Desktop")
         file_name = f"納品書に基づく売上内訳_{year_val} 年{month_val} 月.xlsx"
         save_path = os.path.join(desktop_path, file_name)
-
+        
         conn = common_utils.get_db_connection()
 
         # try...finally による安全な切断管理

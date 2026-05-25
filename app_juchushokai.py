@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 import calendar
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from datetime import datetime
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from datetime import datetime
 import pandas as pd
 from PySide6.QtCore import QDate, Qt
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPen
-from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QApplication,
     QHeaderView,
@@ -19,6 +20,8 @@ from PySide6.QtWidgets import (
     QDateEdit,
     QPushButton
 )
+# 💡 app_nouhin.py と完全に同じ loadUiType 手続き
+from PySide6.QtUiTools import loadUiType
 
 # 共通ユーティリティのインポート
 import common_utils
@@ -26,15 +29,22 @@ import common_utils
 # Pythonに古い一時ファイル（.pyc）を作らせない設定
 sys.dont_write_bytecode = True
 
+# --- 💡 app_nouhin.py と同様の手続きでUIファイルをロード ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(current_dir)
+ui_path = os.path.join(root_dir, "ui_files", "app_juchushokai.ui")
+Ui_MainWindow, QMainWindowBase = loadUiType(ui_path)
+
 # --- QTableWidgetの最大列数と各列幅の定数化 ---
 TABLE_TOTAL_COLUMNS = 4
-COL_WIDTH_ORDER_NO = 115   # 受注番号列
-COL_WIDTH_PRODUCT = 180    # 商品名 / サイズ列
-COL_WIDTH_DETAIL = 200     # 数量明細 / 客先仕様No列
-COL_WIDTH_PRICE = 130      # 単価 / 備考列
+COL_WIDTH_ORDER_NO = 115 # 受注番号列
+COL_WIDTH_PRODUCT = 180  # 商品名 / サイズ列
+COL_WIDTH_DETAIL = 200   # 数量明細 / 客先仕様No列
+COL_WIDTH_PRICE = 130    # 単価 / 備考列
 
 
-class MyWindow:
+# 💡 app_nouhin.py と同じく多重継承構造に変更
+class MyWindow(QMainWindowBase, Ui_MainWindow):
     """受注照会システム メインウィンドウ管理クラス"""
 
     def __init__(self, parent_root=None, parent_menu=None):
@@ -48,49 +58,42 @@ class MyWindow:
         self.grouped_keys = []
         self.all_details_df = None
 
-        # 1. UIファイルの読み込み設定
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        root_dir = os.path.dirname(current_dir)
-        ui_path = os.path.join(root_dir, "ui_files", "app_juchushokai.ui")
-        loader = QUiLoader()
-        self.ui = loader.load(ui_path)
+        # 💡 読み込んだUI定義を自分自身にセットアップ
+        self.setupUi(self)
 
         # 2. ウィンドウ外観（サイズ・タイトル・アイコン）の設定
-        self.ui.setWindowTitle("受注照会")
-        common_utils.set_common_window_icon(self.ui)
-        self.ui.setFixedSize(self.ui.size())
-
-        # クローズイベントをフック
-        self.ui.closeEvent = self.closeEvent
+        self.setWindowTitle("受注照会")
+        common_utils.set_common_window_icon(self)
+        self.setFixedSize(self.size())
 
         # 3. イベントシグナル（ボタン）の連携
-        if hasattr(self.ui, "btn_exe_prev"):
+        if hasattr(self, "btn_exe_prev"):
             try:
-                self.ui.btn_exe_prev.clicked.disconnect()
+                self.btn_exe_prev.clicked.disconnect()
             except:
                 pass
-            self.ui.btn_exe_prev.clicked.connect(self.on_prevButton_click)
+            self.btn_exe_prev.clicked.connect(self.on_prevButton_click)
 
-        if hasattr(self.ui, "btn_exe_next"):
+        if hasattr(self, "btn_exe_next"):
             try:
-                self.ui.btn_exe_next.clicked.disconnect()
+                self.btn_exe_next.clicked.disconnect()
             except:
                 pass
-            self.ui.btn_exe_next.clicked.connect(self.on_nextButton_click)
+            self.btn_exe_next.clicked.connect(self.on_nextButton_click)
 
-        if hasattr(self.ui, "btn_exe_inquiry"):
+        if hasattr(self, "btn_exe_inquiry"):
             try:
-                self.ui.btn_exe_inquiry.clicked.disconnect()
+                self.btn_exe_inquiry.clicked.disconnect()
             except:
                 pass
-            self.ui.btn_exe_inquiry.clicked.connect(self.load_initial_data)
+            self.btn_exe_inquiry.clicked.connect(self.load_initial_data)
 
-        if hasattr(self.ui, "btn_clear"):
+        if hasattr(self, "btn_clear"):
             try:
-                self.ui.btn_clear.clicked.disconnect()
+                self.btn_clear.clicked.disconnect()
             except:
                 pass
-            self.ui.btn_clear.clicked.connect(self.clear_ui)
+            self.btn_clear.clicked.connect(self.clear_ui)
 
         # 4. 日付・テーブル類の接続と、初期化
         self.init_ui()
@@ -99,22 +102,17 @@ class MyWindow:
 
         # UI内の「戻る」ボタンのアクション紐付け
         self.bind_back_button()
-
     def bind_back_button(self):
         """UI内の戻るボタンを自動検知して閉じるアクションを紐付ける"""
-        if hasattr(self.ui, "btn_back"):
-            self.ui.btn_back.clicked.connect(self.ui.close)
+        if hasattr(self, "btn_back"):
+            self.btn_back.clicked.connect(self.close)
             return
 
-        buttons = self.ui.findChildren(QPushButton)
+        buttons = self.findChildren(QPushButton)
         for btn in buttons:
             if btn.text() in ["戻る", "メニュー", "もどる", "Menu", "Back"]:
-                btn.clicked.connect(self.ui.close)
+                btn.clicked.connect(self.close)
                 return
-
-    def show(self):
-        """ウィンドウを表示するメソッド"""
-        self.ui.show()
 
     def init_ui(self):
         """検索条件の初期化とチェックボックスの連動設定"""
@@ -122,12 +120,14 @@ class MyWindow:
         QDateEdit { color: black; background-color: #ffffff; }
         QDateEdit:disabled { color: #bbbbbb; background-color: #f1f5f9; }
         """
+        # 💡 self.ui. を外して、直接コントロールにアクセス
         date_widgets = [
-            self.ui.date_nouki_from, 
-            self.ui.date_nouki_to, 
-            self.ui.date_juchu_date_from, 
-            self.ui.date_juchu_date_to
+            self.date_nouki_from,
+            self.date_nouki_to,
+            self.date_juchu_date_from,
+            self.date_juchu_date_to
         ]
+
         for widget in date_widgets:
             widget.setDisplayFormat("yyyy/MM/dd")
             widget.setStyleSheet(disabled_style)
@@ -137,34 +137,32 @@ class MyWindow:
                 pass
 
         try:
-            self.ui.chk_nouki.toggled.disconnect()
+            self.chk_nouki.toggled.disconnect()
         except:
             pass
         try:
-            self.ui.chk_juchu_date.toggled.disconnect()
+            self.chk_juchu_date.toggled.disconnect()
         except:
             pass
 
         # チェックボックスと日付エリアの有効・無効化の連動
-        self.ui.chk_nouki.toggled.connect(self.ui.date_nouki_from.setEnabled)
-        self.ui.chk_nouki.toggled.connect(self.ui.date_nouki_to.setEnabled)
-        self.ui.chk_juchu_date.toggled.connect(self.ui.date_juchu_date_from.setEnabled)
-        self.ui.chk_juchu_date.toggled.connect(self.ui.date_juchu_date_to.setEnabled)
+        self.chk_nouki.toggled.connect(self.date_nouki_from.setEnabled)
+        self.chk_nouki.toggled.connect(self.date_nouki_to.setEnabled)
+        self.chk_juchu_date.toggled.connect(self.date_juchu_date_from.setEnabled)
+        self.chk_juchu_date.toggled.connect(self.date_juchu_date_to.setEnabled)
 
-        # ★【共通部品化】表示は維持したまま、ダミーボタンのTabフォーカスを無効化
-        common_utils.disable_dummy_buttons_tab_focus(self.ui)
-
-        # ★【共通部品化】すべての複数行テキストエリアでTabキー移動を有効化
-        common_utils.setup_text_edits_tab_focus(self.ui)
+        # ★ 【共通部品化】ダミーボタンのTabフォーカスを無効化
+        common_utils.disable_dummy_buttons_tab_focus(self)
+        # ★ 【共通部品化】すべての複数行テキストエリアでTabキー移動を有効化
+        common_utils.setup_text_edits_tab_focus(self)
 
     def init_table_design(self):
         """明細表示用テーブル（QTableWidget）の初期デザイン・列幅を設定する"""
-        if not hasattr(self, "ui") or not hasattr(self.ui, "tableWidget"):
+        if not hasattr(self, "tableWidget"):
             return
 
-        table = self.ui.tableWidget
+        table = self.tableWidget
         table.setColumnCount(TABLE_TOTAL_COLUMNS)
-        
         headers = [
             "受注番号",
             "商品名 / サイズ",
@@ -183,16 +181,16 @@ class MyWindow:
     def load_initial_data(self):
         """【照会ボタン押下時】データベースから条件に該当するデータを取得して表示する"""
         tyuban_val = ""
-        if hasattr(self.ui, "text_chuban"):
-            widget = self.ui.text_chuban
+        if hasattr(self, "text_chuban"):
+            widget = self.text_chuban
             if hasattr(widget, "text"):
                 tyuban_val = widget.text().strip()
             elif hasattr(widget, "toPlainText"):
                 tyuban_val = widget.toPlainText().strip()
 
         tanname_val = ""
-        if hasattr(self.ui, "text_tanname"):
-            widget = self.ui.text_tanname
+        if hasattr(self, "text_tanname"):
+            widget = self.text_tanname
             if hasattr(widget, "text"):
                 tanname_val = widget.text().strip()
             elif hasattr(widget, "toPlainText"):
@@ -200,36 +198,22 @@ class MyWindow:
 
         sql = """
         SELECT
-        JUH_DENDAT,
-        JUH_JUHNO,
-        JUM_TYUBAN,
-        JUH_NOUKI,
-        JUH_TOKNM1,
-        JUH_TANCD,
-        TAN_NAME,
-        JUM_SHONM,
-        JUM_KIKAKU,
-        JUM_SURYOMEI,
-        JUM_CUSTSYNO,
-        JUM_URITAN,
-        JUM_BIKOU1
+            JUH_DENDAT, JUH_JUHNO, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD,
+            TAN_NAME, JUM_SHONM, JUM_KIKAKU, JUM_SURYOMEI, JUM_CUSTSYNO, JUM_URITAN, JUM_BIKOU1
         FROM T_JUHDAT
-        INNER JOIN T_JUMDAT
-        ON JUH_KCODE = JUM_KCODE
-        AND JUH_DENNO = JUM_DENNO
-        LEFT OUTER JOIN T_TANMST
-        ON JUH_TANCD = TAN_CODE
+        INNER JOIN T_JUMDAT ON JUH_KCODE = JUM_KCODE AND JUH_DENNO = JUM_DENNO
+        LEFT OUTER JOIN T_TANMST ON JUH_TANCD = TAN_CODE
         WHERE (? = '' OR JUH_NOUKI BETWEEN ? AND ?)
-        AND (? = '' OR JUH_DENDAT BETWEEN ? AND ?)
-        AND (? = '' OR JUM_TYUBAN LIKE ?)
-        AND (? = '' OR TAN_NAME LIKE ?)
+          AND (? = '' OR JUH_DENDAT BETWEEN ? AND ?)
+          AND (? = '' OR JUM_TYUBAN LIKE ?)
+          AND (? = '' OR TAN_NAME LIKE ?)
         ORDER BY JUH_DENDAT, JUM_TYUBAN, JUH_NOUKI, JUH_TOKNM1, JUH_TANCD
         """
 
-        nouki_f_val = self.ui.date_nouki_from.date().toString("yyyy-MM-dd") if self.ui.chk_nouki.isChecked() else ""
-        nouki_t_val = self.ui.date_nouki_to.date().toString("yyyy-MM-dd") if self.ui.chk_nouki.isChecked() else ""
-        dendat_f_val = self.ui.date_juchu_date_from.date().toString("yyyy-MM-dd") if self.ui.chk_juchu_date.isChecked() else ""
-        dendat_t_val = self.ui.date_juchu_date_to.date().toString("yyyy-MM-dd") if self.ui.chk_juchu_date.isChecked() else ""
+        nouki_f_val = self.date_nouki_from.date().toString("yyyy-MM-dd") if self.chk_nouki.isChecked() else ""
+        nouki_t_val = self.date_nouki_to.date().toString("yyyy-MM-dd") if self.chk_nouki.isChecked() else ""
+        dendat_f_val = self.date_juchu_date_from.date().toString("yyyy-MM-dd") if self.chk_juchu_date.isChecked() else ""
+        dendat_t_val = self.date_juchu_date_to.date().toString("yyyy-MM-dd") if self.chk_juchu_date.isChecked() else ""
 
         sql_params = [
             nouki_f_val, nouki_f_val, nouki_t_val,
@@ -239,12 +223,10 @@ class MyWindow:
         ]
 
         conn = common_utils.get_db_connection()
-
         try:
             self.all_details_df = pd.read_sql(sql, conn, params=sql_params)
-            
             if self.all_details_df.empty:
-                QMessageBox.information(self.ui, "確認", "該当するデータは見つかりませんでした。")
+                QMessageBox.information(self, "確認", "該当するデータは見つかりませんでした。")
                 return
 
             for col in ["JUH_DENDAT", "JUM_TYUBAN", "JUH_NOUKI", "JUH_TOKNM1", "JUH_TANCD"]:
@@ -252,50 +234,35 @@ class MyWindow:
                 if self.all_details_df[col].dtype == object:
                     self.all_details_df[col] = self.all_details_df[col].astype(str).str.strip()
 
-            group_keys = [
-                "JUH_DENDAT",
-                "JUM_TYUBAN",
-                "JUH_NOUKI",
-                "JUH_TOKNM1",
-                "JUH_TANCD",
-            ]
-            self.grouped_keys = list(
-                self.all_details_df[group_keys]
-                .drop_duplicates()
-                .itertuples(index=False, name=None)
-            )
+            group_keys = ["JUH_DENDAT", "JUM_TYUBAN", "JUH_NOUKI", "JUH_TOKNM1", "JUH_TANCD"]
+            self.grouped_keys = list(self.all_details_df[group_keys].drop_duplicates().itertuples(index=False, name=None))
             self.current_group_idx = 0
             self._display_current_group()
-
         except Exception as e:
-            QMessageBox.critical(
-                self.ui,
-                "エラー",
-                f"データベース処理中にエラーが発生しました:\n{str(e)}",
-            )
+            QMessageBox.critical(self, "エラー", f"データベース処理中にエラーが発生しました:\n{str(e)}")
             self.clear_ui()
         finally:
             conn.close()
     def clear_ui(self):
-        """【クリアボタン（btn_clear）押下時】画面を初期起動時の状態に戻し、表示データをすべて削除する"""
+        """【クリアボタン（btn_clear）押下時】画面を初期状態に戻す"""
         self.current_group_idx = -1
         self.grouped_keys = []
         self.all_details_df = None
 
-        labels_to_clear = ["data_juchu_date", "data_tok_chuban", "data_nouki", "data_tokname", "data_tanname", "word_count"]
-        for label_name in labels_to_clear:
-            if hasattr(self.ui, label_name):
-                getattr(self.ui, label_name).setText("")
+        labels = ["data_juchu_date", "data_tok_chuban", "data_nouki", "data_tokname", "data_tanname", "word_count"]
+        for lbl in labels:
+            if hasattr(self, lbl):
+                getattr(self, lbl).setText("")
 
-        inputs_to_clear = ["text_chuban", "text_tanname"]
-        for input_name in inputs_to_clear:
-            if hasattr(self.ui, input_name):
-                target = getattr(self.ui, input_name)
+        inputs = ["text_chuban", "text_tanname"]
+        for inp in inputs:
+            if hasattr(self, inp):
+                target = getattr(self, inp)
                 if hasattr(target, "clear"):
                     target.clear()
 
-        if hasattr(self.ui, "tableWidget"):
-            table = self.ui.tableWidget
+        if hasattr(self, "tableWidget"):
+            table = self.tableWidget
             table.setRowCount(0)
             table.setRowCount(2)
             table.setItem(0, 0, create_cell_item_helper("受注番号", is_header=True))
@@ -311,20 +278,18 @@ class MyWindow:
             table.setRowHeight(1, 20)
             table.viewport().update()
 
-        # 日付選択の初期値とグレーアウトの確実な同期
         today = QDate.currentDate()
-        self.ui.date_nouki_from.setDate(today)
-        self.ui.date_nouki_to.setDate(today)
-        self.ui.date_juchu_date_from.setDate(today.addMonths(-1))
-        self.ui.date_juchu_date_to.setDate(today)
+        self.date_nouki_from.setDate(today)
+        self.date_nouki_to.setDate(today)
+        self.date_juchu_date_from.setDate(today.addMonths(-1))
+        self.date_juchu_date_to.setDate(today)
 
-        # 一度TrueにしてからFalseに落とすことで、Qt内部のトグルイベントを確実に発火させグレーアウトさせる
-        self.ui.chk_nouki.setChecked(True)
-        self.ui.chk_juchu_date.setChecked(True)
-        self.ui.chk_juchu_date.setChecked(False)
+        self.chk_nouki.setChecked(True)
+        self.chk_juchu_date.setChecked(True)
+        self.chk_juchu_date.setChecked(False)
 
     def on_nextButton_click(self):
-        """「次へ」ボタン（btn_exe_next）押下時、インデックスを1つ進めて次の伝票を表示する"""
+        """「次へ」ボタン押下時"""
         if self.all_details_df is None or not self.grouped_keys:
             return
         self.current_group_idx += 1
@@ -333,7 +298,7 @@ class MyWindow:
         self._display_current_group()
 
     def on_prevButton_click(self):
-        """「前へ」ボタン（btn_exe_prev）押下時、インデックスを1つ戻して前の伝票を表示する"""
+        """「前へ」ボタン押下時"""
         if self.all_details_df is None or not self.grouped_keys:
             return
         self.current_group_idx -= 1
@@ -342,19 +307,16 @@ class MyWindow:
         self._display_current_group()
 
     def _display_current_group(self):
-        """現在選択されているインデックスの伝票ヘッダー情報および明細一覧を画面に描画する"""
+        """現在選択されているインデックスの伝票情報を描画する"""
         if not self.grouped_keys or self.all_details_df is None:
             return
 
-        if hasattr(self.ui, "word_count"):
-            total_count = len(self.grouped_keys)
-            current_num = self.current_group_idx + 1
-            self.ui.word_count.setText(f"{current_num} / {total_count} 件")
+        if hasattr(self, "word_count"):
+            self.word_count.setText(f"{self.current_group_idx + 1} / {len(self.grouped_keys)} 件")
 
         current_key = self.grouped_keys[self.current_group_idx]
         key_dendat, key_tyuban, key_nouki, key_toknm1, key_tancd = current_key
 
-        # 型ブレやNaN、空白をクリアした安全な条件で完全一致抽出
         cond_dendat = (self.all_details_df["JUH_DENDAT"] == key_dendat) | (pd.isna(self.all_details_df["JUH_DENDAT"]) & pd.isna(key_dendat))
         cond_tyuban = (self.all_details_df["JUM_TYUBAN"] == key_tyuban) | (pd.isna(self.all_details_df["JUM_TYUBAN"]) & pd.isna(key_tyuban))
         cond_nouki = (self.all_details_df["JUH_NOUKI"] == key_nouki) | (pd.isna(self.all_details_df["JUH_NOUKI"]) & pd.isna(key_nouki))
@@ -371,8 +333,7 @@ class MyWindow:
             if pd.isna(val) or str(val).strip() in ["", "nan", "NaT"]:
                 return ""
             try:
-                dt = pd.to_datetime(val)
-                return dt.strftime("%Y/%m/%d")
+                return pd.to_datetime(val).strftime("%Y/%m/%d")
             except Exception:
                 return str(val).strip()
 
@@ -385,14 +346,13 @@ class MyWindow:
         }
 
         for label_name, val in mapping.items():
-            if hasattr(self.ui, label_name):
-                getattr(self.ui, label_name).setText(val)
+            if hasattr(self, label_name):
+                getattr(self, label_name).setText(val)
 
-        if hasattr(self.ui, "tableWidget"):
-            table = self.ui.tableWidget
+        if hasattr(self, "tableWidget"):
+            table = self.tableWidget
             table.setRowCount(0)
             table.setRowCount(2 + (len(df_sub) * 2))
-
             table.setItem(0, 0, create_cell_item_helper("受注番号", is_header=True))
             table.setItem(0, 1, create_cell_item_helper("商品名", is_header=True))
             table.setItem(0, 2, create_cell_item_helper("数量明細", is_header=True))
@@ -422,26 +382,24 @@ class MyWindow:
                 table.setSpan(top_row_idx, 0, 2, 1)
                 table.setRowHeight(top_row_idx, 20)
                 table.setRowHeight(bottom_row_idx, 20)
-
             table.viewport().update()
 
     def close_window(self):
-        """【共通関数呼び出し】親メニュー画面を安全に最前面表示させて自身を閉じる"""
-        common_utils.handle_window_close(self.ui, self.parent_menu, getattr(self, "parent_root", None))
+        """【共通関数呼び出し】親画面を表示させて自身を閉じる"""
+        common_utils.handle_window_close(self, self.parent_menu, getattr(self, "parent_root", None))
 
     def closeEvent(self, event):
-        """×ボタンクリック時、または戻るボタンフック時の終了ロジック"""
+        """×ボタンクリック時の終了ロジック"""
         self.close_window()
         event.accept()
 
 
 def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header=False):
-    """QTableWidgetItem を生成・装飾する共通ヘルパー関数（元の内部描画デザイン完全復元版）"""
+    """QTableWidgetItem を生成・装飾する共通ヘルパー関数"""
     text = str(val) if pd.notna(val) else ""
     if is_numeric:
         try:
-            num_val = float(val) if pd.notna(val) else 0.0
-            text = f"{int(num_val):,}"
+            text = f"{int(float(val)):,}"
         except (ValueError, TypeError):
             text = "0" if text == "" else text
 
@@ -470,7 +428,7 @@ def create_cell_item_helper(val, is_numeric=False, align_center=False, is_header
 
 
 def show_window(parent_root):
-    """外部からこのPySide6ウィンドウを呼び出すためのエントリー関数"""
+    """外部から呼び出すためのエントリー関数"""
     app = QApplication.instance()
     if not app:
         app = QApplication(sys.argv)

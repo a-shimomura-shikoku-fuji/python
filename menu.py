@@ -12,6 +12,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 from views import menu_ui
 
 # 各子画面のクラスを別ファイルからインポート
+from controllers.app_general_search import GeneralSearchWindow
 from controllers.app_juchushokai import MyWindow as JuchuShokaiWindow
 from controllers.app_urikake import UrikakeWindow
 from controllers.app_nouhin import NouhinWindow
@@ -46,9 +47,10 @@ class MainMenuWindow:
         # 将来的に新しいシステム（ボタン）を追加したい場合は、ここに1行書き足すだけで自動連動します。
         # =========================================================================
         self. child_systems_map = {
-            "juchu": JuchuShokaiWindow,          # 受注照会
-            "urikake": UrikakeWindow,            # 売掛金回収状況一覧
-            "nouhin": NouhinWindow,              # 納品書に基づく売上内訳
+            "general_search": GeneralSearchWindow,  # 汎用検索
+            "juchu": JuchuShokaiWindow,             # 受注照会
+            "urikake": UrikakeWindow,               # 売掛金回収状況一覧
+            "nouhin": NouhinWindow,                 # 納品書に基づく売上内訳
         }
 
         # 起動した子画面の多重（二重）起動を完璧にガードするためのメモリ管理用辞書
