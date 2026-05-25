@@ -29,48 +29,78 @@
    <iconset theme="QIcon::ThemeIcon::GoHome"/>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow { background-color: #f8fafc; }
-
-/* 項目見出し（ラベル）のスタイル */
-QLabel[objectName^=&quot;label_1&quot;] {
-    background-color: #94a3b8;
-    color: #ffffff !important;
-    font-weight: bold;
-    border: 1px solid #475569;
-    border-radius: 4px;
+   <string notr="true">/*  ウインドウのスタイル */
+QMainWindow {
+    background-color: #f8fafc;
 }
-QLabel#label_2, QLabel#label_4, QLabel#label_6, QLabel#label_7 {
+
+/* タイトルラベルのスタイル */
+QLabel[objectName^=&quot;title_&quot;]  {
+    color: #1e3a8a;
+}
+
+/* 入力項目ラベルのスタイル */
+QLabel[objectName^=&quot;label_&quot;]  {
     background-color: #64748b;
-    color: #ffffff !important;
+    color: #ffffff;
     font-weight: bold;
     border: 1px solid #64748b;
     border-radius: 4px;
 }
 
-/* 閲覧専用（DBからの出力用）ラベルのスタイル */
-QLabel#label_toknm1, QLabel#label_nouki, QLabel#label_tyuban, QLabel#label_tanname, QLabel#label_dendat {
+/* 入力項目表示データのスタイル */
+QLabel[objectName^=&quot;data_&quot;]  {
     background-color: #f1f5f9;
+    color: #334155;
     font-weight: bold;
     border: 1px solid #475569;
     border-radius: 4px;
     padding: 1px;
-    color: #334155;
 }
 
-/* 入力エリア（QTextEdit / QDateEdit）のスタイル */
-QTextEdit, QDateEdit {
+/* 入力項目テキスト（QTextEdit）のスタイル */
+QTextEdit {
     background-color: #ffffff;
+    color: #0f172a;
     border: 1px solid #94a3b8;
     border-radius: 4px;
     padding: 1px;
-    color: #0f172a;
-}
-QTextEdit:focus, QDateEdit:focus {
-    border: 1px solid #3b82f6;
-    background-color: #f8fafc;
 }
 
-/* テーブル全体のスタイル */
+/* 入力項目日付（QDateEdit）のスタイル */
+QDateEdit {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    padding: 1px 4px;
+}
+QDateEdit:focus {
+    background-color: #f8fafc;
+    border: 1px solid #3b82f6;
+}
+
+/* 表示項目ラベルのスタイル */
+QLabel[objectName^=&quot;label_disp_&quot;]  {
+    background-color: #94a3b8;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #475569;
+    border-radius: 4px;
+}
+
+/* フレームのスタイル */
+QFrame#frame_btn {
+    background-color: #f1f5f9; 
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+}
+QFrame#frame_search_results {
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+}
+
+/* テーブルのスタイル */
 QTableWidget {
     background-color: #ffffff;
     gridline-color: #475569;
@@ -79,10 +109,55 @@ QTableWidget {
     border-radius: 4px;
 }
 
-</string>
+/* 通常ボタンのスタイル */
+QPushButton[objectName^=&quot;btn_exe_&quot;] {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #172554;
+    border-radius: 6px;
+}
+QPushButton[objectName^=&quot;btn_exe_&quot;]:hover {
+    background-color: #2563eb;
+    border-color: #60a5fa;
+}
+QPushButton[objectName^=&quot;btn_exe_&quot;]:pressed {
+    background-color: #1d4ed8;
+    border-color: #3b82f6;
+    color: #eff6ff;
+}
+
+/* 戻るボタン、クリアボタンのスタイル */
+QPushButton#btn_back, 
+QPushButton#btn_clear { 
+    background-color: #e2e8f0;
+    color: #475569;
+    font-weight: bold; 
+    border: 1px solid #475569;
+    border-radius: 6px;
+}
+QPushButton#btn_back:hover, 
+QPushButton#btn_clear:hover { 
+    background-color: #cbd5e1;
+    color: #334155;            
+    border: 1px solid #334155;
+}
+QPushButton#btn_back:pressed, 
+QPushButton#btn_clear:pressed { 
+    background-color: #94a3b8;
+    color: #1e293b; 
+    border: 1px solid #1e293b;
+}
+
+/* ダミーボタンのスタイル */
+QPushButton[objectName^=&quot;btn_dummy_&quot;] {
+    background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QFrame" name="frame">
+   <widget class="QFrame" name="frame_btn">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -92,9 +167,7 @@ QTableWidget {
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #f1f5f9; 
-border: 1px solid #475569;
-border-radius: 6px;</string>
+     <string notr="true"/>
     </property>
     <property name="frameShape">
      <enum>QFrame::Shape::StyledPanel</enum>
@@ -102,7 +175,7 @@ border-radius: 6px;</string>
     <property name="frameShadow">
      <enum>QFrame::Shadow::Raised</enum>
     </property>
-    <widget class="QPushButton" name="pushButton_ESC">
+    <widget class="QPushButton" name="btn_back">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -119,14 +192,13 @@ border-radius: 6px;</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #e2e8f0; color: #475569 !important; border: 1px solid #475569;; border-radius: 6px; font-weight: bold; }
-QPushButton:hover { background-color: #cbd5e1; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>戻る</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="btn_exe_prev">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -143,14 +215,13 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #1e3a8a; color: #ffffff !important; border: 1px solid #172554; border-radius: 6px; font-weight: bold; }
-QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>前へ</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="btn_exe_next">
      <property name="geometry">
       <rect>
        <x>160</x>
@@ -167,14 +238,13 @@ QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #1e3a8a; color: #ffffff !important; border: 1px solid #172554; border-radius: 6px; font-weight: bold; }
-QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>次へ</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_9">
+    <widget class="QPushButton" name="btn_exe_inquiry">
      <property name="geometry">
       <rect>
        <x>460</x>
@@ -191,14 +261,13 @@ QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #1e3a8a; color: #ffffff !important; border: 1px solid #172554; border-radius: 6px; font-weight: bold; }
-QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>照会</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_10">
+    <widget class="QPushButton" name="btn_clear">
      <property name="geometry">
       <rect>
        <x>520</x>
@@ -214,14 +283,13 @@ QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #e2e8f0; color: #475569 !important; border: 1px solid #475569;; border-radius: 6px; font-weight: bold; }
-QPushButton:hover { background-color: #cbd5e1; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>クリア</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_1">
+    <widget class="QPushButton" name="btn_dummy_1">
      <property name="geometry">
       <rect>
        <x>220</x>
@@ -230,14 +298,17 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
      <property name="styleSheet">
-      <string notr="true">border: 1px solid #cbd5e1;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="btn_dummy_2">
      <property name="geometry">
       <rect>
        <x>280</x>
@@ -246,14 +317,17 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
      <property name="styleSheet">
-      <string notr="true">border: 1px solid #cbd5e1;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_15">
+    <widget class="QPushButton" name="btn_dummy_3">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -262,14 +336,17 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
      <property name="styleSheet">
-      <string notr="true">border: 1px solid #cbd5e1;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_16">
+    <widget class="QPushButton" name="btn_dummy_4">
      <property name="geometry">
       <rect>
        <x>400</x>
@@ -278,14 +355,17 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
      <property name="styleSheet">
-      <string notr="true">border: 1px solid #cbd5e1;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_17">
+    <widget class="QPushButton" name="btn_dummy_5">
      <property name="geometry">
       <rect>
        <x>580</x>
@@ -294,8 +374,11 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
      <property name="styleSheet">
-      <string notr="true">border: 1px solid #cbd5e1;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -315,6 +398,9 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <font>
       <pointsize>10</pointsize>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="editTriggers">
      <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
@@ -361,7 +447,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      </property>
     </column>
    </widget>
-   <widget class="QLabel" name="label_toknm1">
+   <widget class="QLabel" name="data_tokname">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -380,7 +466,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_10">
+   <widget class="QLabel" name="label_disp_juchu_date">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -402,7 +488,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_14">
+   <widget class="QLabel" name="label_disp_tokname">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -424,7 +510,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_16">
+   <widget class="QLabel" name="label_disp_instructions">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -446,7 +532,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_15">
+   <widget class="QLabel" name="label_disp_tanname">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -468,7 +554,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_13">
+   <widget class="QLabel" name="label_disp_nouki">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -490,7 +576,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_nouki">
+   <widget class="QLabel" name="data_nouki">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -509,7 +595,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_tyuban">
+   <widget class="QLabel" name="data_tok_chuban">
     <property name="geometry">
      <rect>
       <x>330</x>
@@ -528,7 +614,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_tanname">
+   <widget class="QLabel" name="data_tanname">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -547,7 +633,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_dendat">
+   <widget class="QLabel" name="data_juchu_date">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -566,7 +652,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_11">
+   <widget class="QLabel" name="label_disp_tok_chuban">
     <property name="geometry">
      <rect>
       <x>230</x>
@@ -588,7 +674,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label_nouki">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -613,7 +699,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_8">
+   <widget class="QLabel" name="title_inquiry_result">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -635,7 +721,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string>＜照会結果＞</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="word_nouki_from_to">
     <property name="geometry">
      <rect>
       <x>230</x>
@@ -651,7 +737,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="label_juchu_date">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -673,7 +759,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_5">
+   <widget class="QLabel" name="word_label_juchu_date_from_to">
     <property name="geometry">
      <rect>
       <x>230</x>
@@ -689,7 +775,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_6">
+   <widget class="QLabel" name="label_tok_chuban">
     <property name="geometry">
      <rect>
       <x>430</x>
@@ -711,7 +797,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_7">
+   <widget class="QLabel" name="label_tokname">
     <property name="geometry">
      <rect>
       <x>430</x>
@@ -733,7 +819,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QTextEdit" name="text_tyuban">
+   <widget class="QTextEdit" name="text_chuban">
     <property name="geometry">
      <rect>
       <x>530</x>
@@ -751,7 +837,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
     </property>
    </widget>
-   <widget class="QDateEdit" name="date_Nouki_F">
+   <widget class="QDateEdit" name="date_nouki_from">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -765,11 +851,14 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::StrongFocus</enum>
+    </property>
     <property name="calendarPopup">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QDateEdit" name="date_Nouki_T">
+   <widget class="QDateEdit" name="date_nouki_to">
     <property name="geometry">
      <rect>
       <x>260</x>
@@ -783,11 +872,14 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::StrongFocus</enum>
+    </property>
     <property name="calendarPopup">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QDateEdit" name="date_Dendat_F">
+   <widget class="QDateEdit" name="date_juchu_date_from">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -801,11 +893,14 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::StrongFocus</enum>
+    </property>
     <property name="calendarPopup">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QDateEdit" name="date_Dendat_T">
+   <widget class="QDateEdit" name="date_juchu_date_to">
     <property name="geometry">
      <rect>
       <x>260</x>
@@ -819,18 +914,27 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::StrongFocus</enum>
+    </property>
     <property name="calendarPopup">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_Count">
+   <widget class="QLabel" name="word_count">
     <property name="geometry">
      <rect>
       <x>120</x>
       <y>130</y>
-      <width>81</width>
+      <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string/>
@@ -878,7 +982,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
     </property>
    </widget>
-   <widget class="QCheckBox" name="chk_Nouki">
+   <widget class="QCheckBox" name="chk_nouki">
     <property name="geometry">
      <rect>
       <x>380</x>
@@ -891,7 +995,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="chk_Dendat">
+   <widget class="QCheckBox" name="chk_juchu_date">
     <property name="geometry">
      <rect>
       <x>380</x>
@@ -904,7 +1008,7 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_9">
+   <widget class="QLabel" name="title_search_results">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -926,37 +1030,37 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
      <string>＜検索条件＞</string>
     </property>
    </widget>
-   <zorder>frame</zorder>
+   <zorder>frame_btn</zorder>
    <zorder>tableWidget</zorder>
-   <zorder>label_toknm1</zorder>
-   <zorder>label_14</zorder>
+   <zorder>data_tokname</zorder>
+   <zorder>label_disp_tokname</zorder>
+   <zorder>data_nouki</zorder>
+   <zorder>data_tok_chuban</zorder>
+   <zorder>data_tanname</zorder>
+   <zorder>data_juchu_date</zorder>
+   <zorder>label_disp_tok_chuban</zorder>
    <zorder>label_nouki</zorder>
-   <zorder>label_tyuban</zorder>
-   <zorder>label_tanname</zorder>
-   <zorder>label_dendat</zorder>
-   <zorder>label_11</zorder>
-   <zorder>label_2</zorder>
-   <zorder>label_8</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_4</zorder>
-   <zorder>label_5</zorder>
-   <zorder>text_tyuban</zorder>
-   <zorder>date_Nouki_F</zorder>
-   <zorder>date_Nouki_T</zorder>
-   <zorder>date_Dendat_F</zorder>
-   <zorder>date_Dendat_T</zorder>
-   <zorder>label_Count</zorder>
+   <zorder>title_inquiry_result</zorder>
+   <zorder>word_nouki_from_to</zorder>
+   <zorder>label_juchu_date</zorder>
+   <zorder>word_label_juchu_date_from_to</zorder>
+   <zorder>text_chuban</zorder>
+   <zorder>date_nouki_from</zorder>
+   <zorder>date_nouki_to</zorder>
+   <zorder>date_juchu_date_from</zorder>
+   <zorder>date_juchu_date_to</zorder>
+   <zorder>word_count</zorder>
    <zorder>text_tanname</zorder>
    <zorder>text_instructions</zorder>
-   <zorder>chk_Nouki</zorder>
-   <zorder>chk_Dendat</zorder>
-   <zorder>label_9</zorder>
-   <zorder>label_10</zorder>
-   <zorder>label_13</zorder>
-   <zorder>label_15</zorder>
-   <zorder>label_16</zorder>
-   <zorder>label_6</zorder>
-   <zorder>label_7</zorder>
+   <zorder>chk_nouki</zorder>
+   <zorder>chk_juchu_date</zorder>
+   <zorder>title_search_results</zorder>
+   <zorder>label_disp_juchu_date</zorder>
+   <zorder>label_disp_nouki</zorder>
+   <zorder>label_disp_tanname</zorder>
+   <zorder>label_disp_instructions</zorder>
+   <zorder>label_tok_chuban</zorder>
+   <zorder>label_tokname</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -970,6 +1074,23 @@ QPushButton:hover { background-color: #cbd5e1; }</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>date_nouki_from</tabstop>
+  <tabstop>date_nouki_to</tabstop>
+  <tabstop>chk_nouki</tabstop>
+  <tabstop>date_juchu_date_from</tabstop>
+  <tabstop>date_juchu_date_to</tabstop>
+  <tabstop>chk_juchu_date</tabstop>
+  <tabstop>text_chuban</tabstop>
+  <tabstop>text_tanname</tabstop>
+  <tabstop>text_instructions</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>btn_back</tabstop>
+  <tabstop>btn_exe_prev</tabstop>
+  <tabstop>btn_exe_next</tabstop>
+  <tabstop>btn_exe_inquiry</tabstop>
+  <tabstop>btn_clear</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -23,12 +23,12 @@ QFrame#Sidebar QPushButton {
     background-color: transparent; 
     text-align: left;
     padding-left: 14px; 
-    /* 💡 OS標準の立体枠や背景を完全にシャットアウトするため、1pxの透明な線を明示します */
+    /* OS標準の立体枠や背景を完全にシャットアウトするため、1pxの透明な線を明示します */
     border: 1px solid transparent; 
     border-radius: 6px;
 }
 
-/* 💡 ホバー時は背景色を透明なままとし、指定した1本の枠線（#1e293b）のみを美しく描画します */
+/* 💡 【修正箇所】ホバー時は背景色を透明なままとし、指定した1本の枠線（#1e293b）のみを美しく描画します */
 QFrame#Sidebar QPushButton:hover { 
     color: #ffffff; 
     background-color: transparent; 
@@ -43,7 +43,6 @@ QFrame#Sidebar QPushButton:focus {
 }
 
 /* 左側ナビゲーションボタン（選択・チェックされたアクティブ状態） */
-/* 💡 ここでも OS標準の反転と競合させないよう、背景と枠線を鮮やかなブルー（#2563eb）で完全に固定します */
 QFrame#Sidebar QPushButton:checked { 
     color: #ffffff; 
     background-color: #2563eb; 
@@ -56,7 +55,11 @@ QFrame#Sidebar QPushButton:checked:hover {
     border: 1px solid #2563eb;
 }
 
-/* 右側業務機能ボタン（営業技術部・総務部共通の洗練されたネイビーデザイン） */
+/* =========================================================================
+   🌟【最高峰の保守性：右側業務機能ボタンの一括自動定義】
+   特定のオブジェクト名（#）を無くし、QStackedWidgetの中にあるボタン（クラス）として定義します。
+   これにより、将来新しいボタンを増やした際もQSSを1行も直さずにこの洗練されたデザインが自動適用されます。
+   ========================================================================= */
 QStackedWidget QPushButton {
     background-color: #1e3a8a;
     color: #ffffff;
@@ -150,7 +153,7 @@ QStackedWidget QPushButton:disabled {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_common">
+        <widget class="QPushButton" name="btn_kyotsu">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -173,7 +176,7 @@ QStackedWidget QPushButton:disabled {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_qa">
+        <widget class="QPushButton" name="btn_hinshitsu">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -196,7 +199,7 @@ QStackedWidget QPushButton:disabled {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_sales">
+        <widget class="QPushButton" name="btn_eigyo">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -219,7 +222,7 @@ QStackedWidget QPushButton:disabled {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_admin">
+        <widget class="QPushButton" name="btn_soumu">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -242,7 +245,7 @@ QStackedWidget QPushButton:disabled {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_factory">
+        <widget class="QPushButton" name="btn_seizo">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -304,7 +307,6 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
     background-color: #2563eb; /* 鮮やかな明るい青へ変化 */
     border-color: #60a5fa;     /* 枠線を水色へ変化 */
 }
-
 </string>
       </property>
       <property name="currentIndex">

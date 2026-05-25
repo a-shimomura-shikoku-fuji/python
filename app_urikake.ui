@@ -27,7 +27,7 @@ QMainWindow {
 
 /* タイトルラベルのスタイル */
 QLabel[objectName^=&quot;title_&quot;]  {
-    color: #334155;
+    color: #1e3a8a;
 }
 
 /* 入力項目ラベルのスタイル */
@@ -107,7 +107,7 @@ QPushButton[objectName^=&quot;btn_dummy_&quot;] {
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="title_Extraction_conditions">
+   <widget class="QLabel" name="title_search_conditions">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -123,7 +123,7 @@ QPushButton[objectName^=&quot;btn_dummy_&quot;] {
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: #1e3a8a;</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>＜抽出条件＞</string>
