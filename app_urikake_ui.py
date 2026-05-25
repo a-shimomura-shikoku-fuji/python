@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
 "\n"
 "/* \u30bf\u30a4\u30c8\u30eb\u30e9\u30d9\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QLabel[objectName^=\"title_\"]  {\n"
-"    color: #334155;\n"
+"    color: #1e3a8a;\n"
 "}\n"
 "\n"
 "/* \u5165\u529b\u9805\u76ee\u30e9\u30d9\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
@@ -116,14 +116,14 @@ class Ui_MainWindow(object):
 "}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.title_Extraction_conditions = QLabel(self.centralwidget)
-        self.title_Extraction_conditions.setObjectName(u"title_Extraction_conditions")
-        self.title_Extraction_conditions.setGeometry(QRect(30, 30, 81, 21))
+        self.title_search_conditions = QLabel(self.centralwidget)
+        self.title_search_conditions.setObjectName(u"title_search_conditions")
+        self.title_search_conditions.setGeometry(QRect(30, 30, 81, 21))
         font1 = QFont()
         font1.setPointSize(10)
         font1.setBold(True)
-        self.title_Extraction_conditions.setFont(font1)
-        self.title_Extraction_conditions.setStyleSheet(u"color: #1e3a8a;")
+        self.title_search_conditions.setFont(font1)
+        self.title_search_conditions.setStyleSheet(u"")
         self.label_target_year_month = QLabel(self.centralwidget)
         self.label_target_year_month.setObjectName(u"label_target_year_month")
         self.label_target_year_month.setGeometry(QRect(20, 60, 101, 21))
@@ -196,7 +196,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u58f2\u639b\u91d1\u56de\u53ce\u72b6\u6cc1\u4e00\u89a7", None))
-        self.title_Extraction_conditions.setText(QCoreApplication.translate("MainWindow", u"\uff1c\u62bd\u51fa\u6761\u4ef6\uff1e", None))
+        self.title_search_conditions.setText(QCoreApplication.translate("MainWindow", u"\uff1c\u62bd\u51fa\u6761\u4ef6\uff1e", None))
         self.label_target_year_month.setText(QCoreApplication.translate("MainWindow", u"\u5bfe\u8c61\u5e74\u6708", None))
         self.date_target_year_month.setDisplayFormat(QCoreApplication.translate("MainWindow", u"yyyy/MM", None))
         self.btn_back.setText(QCoreApplication.translate("MainWindow", u"\u623b\u308b", None))
