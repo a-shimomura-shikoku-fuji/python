@@ -1,6 +1,7 @@
 import calendar
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime import datetime
 
 import pandas as pd
@@ -49,7 +50,8 @@ class MyWindow:
 
         # 1. UIファイルの読み込み設定
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        ui_path = os.path.join(current_dir, "app_juchushokai.ui")
+        root_dir = os.path.dirname(current_dir)
+        ui_path = os.path.join(root_dir, "ui_files", "app_juchushokai.ui")
         loader = QUiLoader()
         self.ui = loader.load(ui_path)
 
@@ -243,7 +245,6 @@ class MyWindow:
             
             if self.all_details_df.empty:
                 QMessageBox.information(self.ui, "確認", "該当するデータは見つかりませんでした。")
-                self.clear_ui()
                 return
 
             for col in ["JUH_DENDAT", "JUM_TYUBAN", "JUH_NOUKI", "JUH_TOKNM1", "JUH_TANCD"]:

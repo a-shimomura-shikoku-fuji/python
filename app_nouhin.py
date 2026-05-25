@@ -1,6 +1,8 @@
 import calendar
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from datetime import datetime
 
 import pandas as pd
@@ -17,8 +19,11 @@ import common_utils
 sys.dont_write_bytecode = True
 
 # UIファイルをロード
-ui_path = os.path.join(os.path.dirname(__file__), "app_nouhin.ui")
-Ui_MainWindow, QMainWindowBase = loadUiType(ui_path)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(current_dir)
+
+ui_main_path = os.path.join(root_dir, "ui_files", "app_nouhin.ui")
+Ui_MainWindow, QMainWindowBase = loadUiType(ui_main_path)
 
 # --- Excel列位置・集計項目のマジックナンバー定数化 ---
 COL_DATE = 1          # 日付列

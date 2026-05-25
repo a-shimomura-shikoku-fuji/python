@@ -1,5 +1,7 @@
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from datetime import datetime
 
 import pandas as pd
@@ -19,13 +21,15 @@ import common_utils
 sys.dont_write_bytecode = True
 
 # メイン画面のUIファイルをロード
-ui_main_path = os.path.join(os.path.dirname(__file__), "app_urikake.ui")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(current_dir)
+
+ui_main_path = os.path.join(root_dir, "ui_files", "app_urikake.ui")
 Ui_MainWindow, QMainWindowBase = loadUiType(ui_main_path)
 
 # --- Excel列位置・集計項目のマジックナンバー定数化 ---
 COL_CODE = 2    # コード列
 COL_AMOUNT = 5  # 売上金額列
-
 
 class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
     """売掛金回収状況一覧 メイン画面クラス"""
@@ -211,10 +215,10 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
         finally:
             cursor.close()
             conn.close()
-# 設定画面のUIファイルをロード
-ui_sub_path = os.path.join(os.path.dirname(__file__), "app_urikake_setting.ui")
-Ui_SettingDialog, _ = loadUiType(ui_sub_path)
 
+# 設定画面のUIファイルをロード
+ui_sub_path = os.path.join(root_dir, "ui_files", "app_urikake_setting.ui")
+Ui_SettingDialog, _ = loadUiType(ui_sub_path)
 
 class SettingWindow(QMainWindow, Ui_SettingDialog):
     """出力設定変更サブ画面 クラス（デザイン維持・挙動完全安定化版）"""
