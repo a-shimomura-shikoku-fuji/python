@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>700</height>
+    <width>968</width>
+    <height>712</height>
    </rect>
   </property>
   <property name="font">
@@ -17,7 +17,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>データベース汎用マルチ詳細検索</string>
+   <string>汎用検索</string>
   </property>
   <property name="windowIcon">
    <iconset theme="QIcon::ThemeIcon::GoHome"/>
@@ -58,30 +58,39 @@ QTableWidget {
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <!-- 検索条件エリア -->
    <widget class="QLabel" name="label_title_cond">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>10</y>
       <width>180</width>
       <height>16</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
-     <string>＜複数条件検索設定＞</string>
+     <string>＜条件設定＞</string>
     </property>
    </widget>
-   
-   <!-- 対象テーブル -->
    <widget class="QLabel" name="label_table_lbl">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>35</y>
+      <y>40</y>
       <width>101</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>対象テーブル</string>
@@ -93,26 +102,35 @@ QTableWidget {
    <widget class="QComboBox" name="cmb_table_name">
     <property name="geometry">
      <rect>
-      <x>125</x>
-      <y>35</y>
+      <x>120</x>
+      <y>40</y>
       <width>220</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="editable">
      <bool>true</bool>
     </property>
    </widget>
-
-   <!-- 条件ビルダエリア -->
    <widget class="QLabel" name="label_col_lbl">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>65</y>
+      <y>70</y>
       <width>101</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>条件の規則</string>
@@ -124,31 +142,46 @@ QTableWidget {
    <widget class="QComboBox" name="cmb_column_name">
     <property name="geometry">
      <rect>
-      <x>125</x>
-      <y>65</y>
+      <x>120</x>
+      <y>70</y>
       <width>160</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
    </widget>
    <widget class="QComboBox" name="cmb_operator">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>65</y>
+      <x>280</x>
+      <y>70</y>
       <width>110</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
    </widget>
    <widget class="QTextEdit" name="text_cond_value">
     <property name="geometry">
      <rect>
-      <x>405</x>
-      <y>65</y>
-      <width>200</width>
+      <x>390</x>
+      <y>70</y>
+      <width>211</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="verticalScrollBarPolicy">
      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
@@ -161,7 +194,7 @@ QTableWidget {
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>65</y>
+      <y>70</y>
       <width>50</width>
       <height>21</height>
      </rect>
@@ -173,19 +206,24 @@ QTableWidget {
      <string>追加</string>
     </property>
    </widget>
-
-   <!-- 現在適用されている条件リスト -->
    <widget class="QLabel" name="label_list_lbl">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>95</y>
+      <y>100</y>
       <width>101</width>
-      <height>50</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
-     <string>現在の条件&#10;(AND結合)</string>
+     <string>現在の条件
+(AND結合)</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -194,20 +232,25 @@ QTableWidget {
    <widget class="QListWidget" name="listWidget_conds">
     <property name="geometry">
      <rect>
-      <x>125</x>
-      <y>95</y>
+      <x>120</x>
+      <y>100</y>
       <width>480</width>
-      <height>50</height>
+      <height>61</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_del_cond">
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>95</y>
+      <y>100</y>
       <width>50</width>
-      <height>25</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -217,15 +260,20 @@ QTableWidget {
      <string>削除</string>
     </property>
    </widget>
-   <!-- 全列キーワード -->
    <widget class="QLabel" name="label_keyword_lbl">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>155</y>
+      <y>170</y>
       <width>101</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>結果内検索</string>
@@ -237,11 +285,16 @@ QTableWidget {
    <widget class="QTextEdit" name="text_keyword">
     <property name="geometry">
      <rect>
-      <x>125</x>
-      <y>155</y>
-      <width>535</width>
+      <x>120</x>
+      <y>170</y>
+      <width>481</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="verticalScrollBarPolicy">
      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
@@ -250,45 +303,38 @@ QTableWidget {
      <string>スペース区切りで、抽出されたデータをさらに横断絞り込みできます</string>
     </property>
    </widget>
-
-   <!-- 検索結果エリア -->
    <widget class="QLabel" name="label_title_result">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>190</y>
+      <y>210</y>
       <width>120</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>＜照会結果＞</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_Count">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>190</y>
-      <width>120</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>215</y>
-      <width>700</width>
-      <height>300</height>
+      <y>234</y>
+      <width>931</width>
+      <height>351</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="editTriggers">
      <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
@@ -300,14 +346,12 @@ QTableWidget {
      <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
     </property>
    </widget>
-
-   <!-- 下部フッターアクションフレーム -->
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>590</y>
-      <width>700</width>
+      <width>931</width>
       <height>51</height>
      </rect>
     </property>
@@ -330,39 +374,26 @@ QTableWidget {
       <string>戻る</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="btn_exe_csv">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>580</x>
        <y>10</y>
-       <width>90</width>
+       <width>51</width>
        <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #0d9488; color: #ffffff !important; border: 1px solid #0f766e; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #0cc5b3; }</string>
+      <string notr="true">QPushButton { background-color: #1e3a8a; color: #ffffff !important; border: 1px solid #172554; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
      </property>
      <property name="text">
-      <string>CSV出力</string>
+      <string>CSV</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_1">
+    <widget class="QPushButton" name="btn_exe_inquiry">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>10</y>
-       <width>10</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border: 1px solid #cbd5e1;</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_9">
-     <property name="geometry">
-      <rect>
-       <x>520</x>
+       <x>460</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -378,7 +409,7 @@ QTableWidget {
     <widget class="QPushButton" name="pushButton_10">
      <property name="geometry">
       <rect>
-       <x>580</x>
+       <x>520</x>
        <y>10</y>
        <width>51</width>
        <height>31</height>
@@ -391,10 +422,146 @@ QTableWidget {
       <string>クリア</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="btn_dummy_1">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_dummy_2">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_dummy_3">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_dummy_4">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_dummy_5">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_dummy_11">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>10</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">  background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>968</width>
+     <height>33</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <resources/>
  <connections/>
 </ui>
