@@ -68,10 +68,10 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
             self.pushButton_ESC.clicked.connect(self.close_window)
         if hasattr(self, "pushButton_10"):
             self.pushButton_10.clicked.connect(self.clear_ui)
-        if hasattr(self, "pushButton_9"):
-            self.pushButton_9.clicked.connect(self.run_query)
-        if hasattr(self, "pushButton_2"):
-            self.pushButton_2.clicked.connect(self.export_csv)
+        if hasattr(self, "btn_exe_inquiry"):
+            self.btn_exe_inquiry.clicked.connect(self.run_query)
+        if hasattr(self, "btn_exe_csv"):
+            self.btn_exe_csv.clicked.connect(self.export_csv)
 
         self.load_table_columns()
 
