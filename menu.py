@@ -48,7 +48,7 @@ class MainMenuWindow:
         # =========================================================================
         self. child_systems_map = {
             "general_search": GeneralSearchWindow,  # 汎用検索
-            "juchu": JuchuShokaiWindow,             # 受注照会
+            "juchushokai": JuchuShokaiWindow,       # 受注照会
             "urikake": UrikakeWindow,               # 売掛金回収状況一覧
             "nouhin": NouhinWindow,                 # 納品書に基づく売上内訳
         }
@@ -62,24 +62,18 @@ class MainMenuWindow:
         # 含まれていれば、大文字・小文字、Windowの有無に関わらず100%確実にイベントを自動直結します。
         # これにより、UI側の名前がどうなっていても絶対に起動するようになります。
         # =========================================================================
-        if hasattr( self. ui, "btn_JuchuShokai" ):
-            self. ui. btn_JuchuShokai. clicked. connect( lambda: self. _open_child_system( "juchu" ) )
-        elif hasattr( self. ui, "btn_juchu" ):
-            self. ui. btn_juchu. clicked. connect( lambda: self. _open_child_system( "juchu" ) )
+        if hasattr( self. ui, "btn_general_search" ):
+            self. ui. btn_general_search.  clicked. connect( lambda: self. _open_child_system( "general_search" ) )
 
-        # 売掛金ボタンのあらゆるネーミング（大文字小文字・古い名前）を安全にフック
-        if hasattr( self. ui, "btn_Urikake" ):
-            self. ui. btn_Urikake. clicked. connect( lambda: self. _open_child_system( "urikake" ) )
-        elif hasattr( self. ui, "btn_urikake" ):
-            self. ui. btn_urikake. clicked. connect( lambda: self. _open_child_system( "urikake" ) )
-        elif hasattr( self. ui, "btn_UrikakeWindow" ):
-            self. ui. btn_UrikakeWindow. clicked. connect( lambda: self. _open_child_system( "urikake" ) )
+        if hasattr( self. ui, "btn_juchushokai" ):
+            self. ui. btn_juchushokai.  clicked. connect( lambda: self. _open_child_system( "juchushokai" ) )
 
-        if hasattr( self. ui, "btn_Nouhin" ):
-            self. ui. btn_Nouhin. clicked. connect( lambda: self. _open_child_system( "nouhin" ) )
-        elif hasattr( self. ui, "btn_uriage_utivake" ):
-            self. ui. btn_uriage_utivake. clicked. connect( lambda: self. _open_child_system( "nouhin" ) )
-
+        if hasattr( self. ui, "btn_urikake" ):
+            self. ui. btn_urikake  . clicked. connect( lambda: self. _open_child_system( "urikake" ) )
+        
+        if hasattr( self. ui, "btn_nouhin" ):
+            self. ui. btn_nouhin.  clicked. connect( lambda: self. _open_child_system( "nouhin" ) )
+        
         # 2. 5つの部署ナビゲーションボタンのイベント登録 (ページインデックスと同期)
         self. ui. btn_kyotsu. clicked. connect( lambda: self. _switch_department( 0)) # 共通
         self. ui. btn_hinshitsu. clicked. connect( lambda: self. _switch_department( 1)) # 品質保証部
