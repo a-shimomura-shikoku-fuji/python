@@ -20,7 +20,8 @@ from PySide6.QtWidgets import (
     QDateEdit,
     QPushButton
 )
-from ui_files.app_juchushokai_ui import Ui_MainWindow
+# 💡 app_nouhin.py と完全に同じ loadUiType 手続き
+from PySide6.QtUiTools import loadUiType
 
 # 共通ユーティリティのインポート
 import common_utils
@@ -31,6 +32,8 @@ sys.dont_write_bytecode = True
 # --- 💡 app_nouhin.py と同様の手続きでUIファイルをロード ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(current_dir)
+ui_path = os.path.join(root_dir, "ui_files", "app_juchushokai.ui")
+Ui_MainWindow, QMainWindowBase = loadUiType(ui_path)
 
 # --- QTableWidgetの最大列数と各列幅の定数化 ---
 TABLE_TOTAL_COLUMNS = 4
@@ -41,7 +44,7 @@ COL_WIDTH_PRICE = 130    # 単価 / 備考列
 
 
 # 💡 app_nouhin.py と同じく多重継承構造に変更
-class MyWindow(QMainWindow, Ui_MainWindow):
+class MyWindow(QMainWindowBase, Ui_MainWindow):
     """受注照会システム メインウィンドウ管理クラス"""
 
     def __init__(self, parent_root=None, parent_menu=None):
