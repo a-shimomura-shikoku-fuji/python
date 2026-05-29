@@ -10,7 +10,7 @@ from controllers.menu import MainMenuWindow  # クラス名は実際の menu.py 
 def main():
     app = QApplication(sys.argv)
     window = MainMenuWindow()
-    window.ui.show()
+    window.show()
     sys.exit(app.exec())
 
 if __name__ == "__main__":
