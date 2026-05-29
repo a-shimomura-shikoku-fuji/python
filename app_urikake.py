@@ -250,6 +250,15 @@ class SettingWindow(QMainWindow, Ui_SubWindow):
         self.btn_exe_change.clicked.connect(self.update_settings)
 
     def eventFilter(self, obj, event):
+        """QTextEditでのEnter/Tabキー、およびフォーカスイン・アウトの挙動を完全に制御する"""
+        # --- 【追加】フォーカスが当たった（入った）ときの制御 ---
+        if event. type() == event. Type. FocusIn:
+            # 得意先コード欄、または表示順欄にフォーカスが当たったら全選択（反転）にする
+            if obj in (self. text_tokcode, self. text_order):
+                # 処理の競合を防ぐため、少しだけ遅延させて全選択を実行します
+                from PySide6. QtCore import QTimer
+                QTimer. singleShot( 0, obj. selectAll)
+
         """QTextEditでのEnter/Tabキーおよびフォーカスアウトの挙動を完全に制御する"""
         if event.type() == event.Type.KeyPress:
             # 得意先コード欄での制御
