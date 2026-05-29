@@ -12,7 +12,8 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from PySide6.QtCore import QDate, Qt
 from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QPushButton
-from PySide6.QtUiTools import loadUiType
+from ui_files.app_urikake_ui import Ui_MainWindow
+from ui_files.app_urikake_setting_ui import Ui_SubWindow
 
 # 共通ユーティリティのインポート
 import common_utils
@@ -20,18 +21,11 @@ import common_utils
 # Pythonに古い一時ファイル（.pyc）を作らせない設定
 sys.dont_write_bytecode = True
 
-# メイン画面のUIファイルをロード
-current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
-
-ui_main_path = os.path.join(root_dir, "ui_files", "app_urikake.ui")
-Ui_MainWindow, QMainWindowBase = loadUiType(ui_main_path)
-
 # --- Excel列位置・集計項目のマジックナンバー定数化 ---
 COL_CODE = 2    # コード列
 COL_AMOUNT = 5  # 売上金額列
 
-class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
+class UrikakeWindow(QMainWindow, Ui_MainWindow):
     """売掛金回収状況一覧 メイン画面クラス"""
 
     def __init__(self, parent_menu=None):
@@ -216,11 +210,7 @@ class UrikakeWindow(QMainWindowBase, Ui_MainWindow):
             cursor.close()
             conn.close()
 
-# 設定画面のUIファイルをロード
-ui_sub_path = os.path.join(root_dir, "ui_files", "app_urikake_setting.ui")
-Ui_SettingDialog, _ = loadUiType(ui_sub_path)
-
-class SettingWindow(QMainWindow, Ui_SettingDialog):
+class SettingWindow(QMainWindow, Ui_SubWindow):
     """出力設定変更サブ画面 クラス（デザイン維持・挙動完全安定化版）"""
 
     def __init__(self, parent):

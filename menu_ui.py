@@ -200,9 +200,9 @@ class Ui_MainMenuWindow(object):
 "")
         self.page_common = QWidget()
         self.page_common.setObjectName(u"page_common")
-        self.verticalLayout_common = QVBoxLayout(self.page_common)
-        self.verticalLayout_common.setObjectName(u"verticalLayout_common")
-        self.verticalLayout_common.setContentsMargins(30, 30, 30, 30)
+        self.verticalLayout = QVBoxLayout(self.page_common)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(30, 30, 30, 30)
         self.title_common = QLabel(self.page_common)
         self.title_common.setObjectName(u"title_common")
         font3 = QFont()
@@ -212,11 +212,32 @@ class Ui_MainMenuWindow(object):
         self.title_common.setFont(font3)
         self.title_common.setStyleSheet(u"color: #1e293b; margin-bottom: 20px;")
 
-        self.verticalLayout_common.addWidget(self.title_common)
+        self.verticalLayout.addWidget(self.title_common)
 
-        self.spacer_common_bottom = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.horizontalLayout_sales_btns_2 = QHBoxLayout()
+        self.horizontalLayout_sales_btns_2.setSpacing(20)
+        self.horizontalLayout_sales_btns_2.setObjectName(u"horizontalLayout_sales_btns_2")
+        self.btn_general_search = QPushButton(self.page_common)
+        self.btn_general_search.setObjectName(u"btn_general_search")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_general_search.sizePolicy().hasHeightForWidth())
+        self.btn_general_search.setSizePolicy(sizePolicy)
+        self.btn_general_search.setMinimumSize(QSize(160, 80))
 
-        self.verticalLayout_common.addItem(self.spacer_common_bottom)
+        self.horizontalLayout_sales_btns_2.addWidget(self.btn_general_search)
+
+        self.spacer_sales_btns_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_sales_btns_2.addItem(self.spacer_sales_btns_2)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_sales_btns_2)
+
+        self.spacer_admin_bottom_2 = QSpacerItem(507, 275, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.spacer_admin_bottom_2)
 
         self.stackedWidget.addWidget(self.page_common)
         self.page_qa = QWidget()
@@ -251,16 +272,13 @@ class Ui_MainMenuWindow(object):
         self.horizontalLayout_sales_btns = QHBoxLayout()
         self.horizontalLayout_sales_btns.setSpacing(20)
         self.horizontalLayout_sales_btns.setObjectName(u"horizontalLayout_sales_btns")
-        self.btn_JuchuShokai = QPushButton(self.page_sales)
-        self.btn_JuchuShokai.setObjectName(u"btn_JuchuShokai")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_JuchuShokai.sizePolicy().hasHeightForWidth())
-        self.btn_JuchuShokai.setSizePolicy(sizePolicy)
-        self.btn_JuchuShokai.setMinimumSize(QSize(160, 80))
+        self.btn_juchushokai = QPushButton(self.page_sales)
+        self.btn_juchushokai.setObjectName(u"btn_juchushokai")
+        sizePolicy.setHeightForWidth(self.btn_juchushokai.sizePolicy().hasHeightForWidth())
+        self.btn_juchushokai.setSizePolicy(sizePolicy)
+        self.btn_juchushokai.setMinimumSize(QSize(160, 80))
 
-        self.horizontalLayout_sales_btns.addWidget(self.btn_JuchuShokai)
+        self.horizontalLayout_sales_btns.addWidget(self.btn_juchushokai)
 
         self.spacer_sales_btns = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -295,11 +313,11 @@ class Ui_MainMenuWindow(object):
 
         self.horizontalLayout_admin_btns.addWidget(self.btn_urikake)
 
-        self.btn_Nouhin = QPushButton(self.page_admin)
-        self.btn_Nouhin.setObjectName(u"btn_Nouhin")
-        self.btn_Nouhin.setMinimumSize(QSize(160, 80))
+        self.btn_nouhin = QPushButton(self.page_admin)
+        self.btn_nouhin.setObjectName(u"btn_nouhin")
+        self.btn_nouhin.setMinimumSize(QSize(160, 80))
 
-        self.horizontalLayout_admin_btns.addWidget(self.btn_Nouhin)
+        self.horizontalLayout_admin_btns.addWidget(self.btn_nouhin)
 
         self.spacer_admin_btns = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -362,12 +380,13 @@ class Ui_MainMenuWindow(object):
         self.btn_soumu.setText(QCoreApplication.translate("MainMenuWindow", u" \u7dcf\u52d9\u90e8", None))
         self.btn_seizo.setText(QCoreApplication.translate("MainMenuWindow", u" \u88fd\u9020\u90e8", None))
         self.title_common.setText(QCoreApplication.translate("MainMenuWindow", u"\u5171\u901a \u696d\u52d9\u30e1\u30cb\u30e5\u30fc", None))
+        self.btn_general_search.setText(QCoreApplication.translate("MainMenuWindow", u"\u6c4e\u7528\u691c\u7d22", None))
         self.title_qa.setText(QCoreApplication.translate("MainMenuWindow", u"\u54c1\u8cea\u4fdd\u8a3c\u90e8 \u696d\u52d9\u30e1\u30cb\u30e5\u30fc", None))
         self.title_sales.setText(QCoreApplication.translate("MainMenuWindow", u"\u55b6\u696d\u6280\u8853\u90e8 \u696d\u52d9\u30e1\u30cb\u30e5\u30fc", None))
-        self.btn_JuchuShokai.setText(QCoreApplication.translate("MainMenuWindow", u"\u53d7\u6ce8\u7167\u4f1a", None))
+        self.btn_juchushokai.setText(QCoreApplication.translate("MainMenuWindow", u"\u53d7\u6ce8\u7167\u4f1a", None))
         self.title_admin.setText(QCoreApplication.translate("MainMenuWindow", u"\u7dcf\u52d9\u90e8 \u696d\u52d9\u30e1\u30cb\u30e5\u30fc", None))
         self.btn_urikake.setText(QCoreApplication.translate("MainMenuWindow", u"\u58f2\u639b\u91d1\u56de\u53ce\u72b6\u6cc1\u4e00\u89a7", None))
-        self.btn_Nouhin.setText(QCoreApplication.translate("MainMenuWindow", u"\u7d0d\u54c1\u66f8\u306b\u57fa\u3065\u304f\u58f2\u4e0a\u5185\u8a33", None))
+        self.btn_nouhin.setText(QCoreApplication.translate("MainMenuWindow", u"\u7d0d\u54c1\u66f8\u306b\u57fa\u3065\u304f\u58f2\u4e0a\u5185\u8a33", None))
         self.title_factory.setText(QCoreApplication.translate("MainMenuWindow", u"\u88fd\u9020\u90e8 \u696d\u52d9\u30e1\u30cb\u30e5\u30fc", None))
     # retranslateUi
 

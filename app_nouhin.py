@@ -10,7 +10,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from PySide6.QtCore import QDate, Qt
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PySide6.QtUiTools import loadUiType
+from ui_files.app_nouhin_ui import Ui_MainWindow
 
 # 共通ユーティリティのインポート
 import common_utils
@@ -22,21 +22,19 @@ sys.dont_write_bytecode = True
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(current_dir)
 
-ui_main_path = os.path.join(root_dir, "ui_files", "app_nouhin.ui")
-Ui_MainWindow, QMainWindowBase = loadUiType(ui_main_path)
-
 # --- Excel列位置・集計項目のマジックナンバー定数化 ---
 COL_DATE = 1          # 日付列
 COL_TOTAL_AMOUNT = 7  # 売上合計列
 
 
-class NouhinWindow(QMainWindowBase, Ui_MainWindow):
+class NouhinWindow(QMainWindow, Ui_MainWindow):
     """納品書に基づく売上内訳 ウィンドウ管理クラス"""
 
     def __init__(self, parent_menu=None):
         """初期化処理・コンポーネントとUIのセットアップ"""
         super().__init__()
         self.parent_menu = parent_menu
+        self.setupUi(self)
         self.init_ui()
 
     def init_ui(self):

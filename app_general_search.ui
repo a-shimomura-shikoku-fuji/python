@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>968</width>
-    <height>712</height>
+    <height>671</height>
    </rect>
   </property>
   <property name="font">
@@ -23,20 +23,136 @@
    <iconset theme="QIcon::ThemeIcon::GoHome"/>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow { background-color: #f8fafc; }
-QLabel[objectName^=&quot;label_&quot;] {
+   <string notr="true">/*  ウインドウのスタイル */
+QMainWindow {
+    background-color: #f8fafc;
+}
+
+/* タイトルラベルのスタイル */
+QLabel[objectName^=&quot;title_&quot;]  {
+    color: #1e3a8a;
+}
+
+/* 入力項目ラベルのスタイル */
+QLabel[objectName^=&quot;label_&quot;]  {
     background-color: #64748b;
-    color: #ffffff !important;
+    color: #ffffff;
     font-weight: bold;
     border: 1px solid #64748b;
     border-radius: 4px;
 }
-QLabel#label_title_cond, QLabel#label_title_result {
-    background-color: transparent;
-    color: #1e3a8a !important;
+
+/* 入力項目表示データのスタイル */
+QLabel[objectName^=&quot;data_&quot;]  {
+    background-color: #f1f5f9;
+    color: #334155;
     font-weight: bold;
-    border: none;
+    border: 1px solid #475569;
+    border-radius: 4px;
+    padding: 1px;
 }
+
+/* 入力項目テキスト（QTextEdit）のスタイル */
+QTextEdit {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    padding: 1px;
+}
+
+/* 入力項目日付（QDateEdit）のスタイル */
+QDateEdit {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    padding: 1px 4px;
+}
+QDateEdit:focus {
+    background-color: #f8fafc;
+    border: 1px solid #3b82f6;
+}
+
+/* 入力項目コンボボックス（QComboBox）のスタイル */
+
+
+/* 表示項目ラベルのスタイル */
+QLabel[objectName^=&quot;label_disp_&quot;]  {
+    background-color: #94a3b8;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #475569;
+    border-radius: 4px;
+}
+
+/* フレームのスタイル */
+QFrame#frame_btn {
+    background-color: #f1f5f9; 
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+}
+QFrame#frame_search_results {
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+}
+
+/* テーブルのスタイル */
+QTableWidget {
+    background-color: #ffffff;
+    gridline-color: #475569;
+    border: 1px solid #475569;
+    padding: 1px;
+    border-radius: 4px;
+}
+
+/* 通常ボタンのスタイル */
+QPushButton[objectName^=&quot;btn_exe_&quot;] {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #172554;
+    border-radius: 6px;
+}
+QPushButton[objectName^=&quot;btn_exe_&quot;]:hover {
+    background-color: #2563eb;
+    border-color: #60a5fa;
+}
+QPushButton[objectName^=&quot;btn_exe_&quot;]:pressed {
+    background-color: #1d4ed8;
+    border-color: #3b82f6;
+    color: #eff6ff;
+}
+
+/* 戻るボタン、クリアボタンのスタイル */
+QPushButton#btn_back, 
+QPushButton#btn_clear { 
+    background-color: #e2e8f0;
+    color: #475569;
+    font-weight: bold; 
+    border: 1px solid #475569;
+    border-radius: 6px;
+}
+QPushButton#btn_back:hover, 
+QPushButton#btn_clear:hover { 
+    background-color: #cbd5e1;
+    color: #334155;            
+    border: 1px solid #334155;
+}
+QPushButton#btn_back:pressed, 
+QPushButton#btn_clear:pressed { 
+    background-color: #94a3b8;
+    color: #1e293b; 
+    border: 1px solid #1e293b;
+}
+
+/* ダミーボタンのスタイル */
+QPushButton[objectName^=&quot;btn_dummy_&quot;] {
+    background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
 QComboBox, QTextEdit, QListWidget {
     background-color: #ffffff;
     border: 1px solid #94a3b8;
@@ -58,12 +174,12 @@ QTableWidget {
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label_title_cond">
+   <widget class="QLabel" name="title_cond">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>30</x>
       <y>10</y>
-      <width>180</width>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
@@ -77,7 +193,7 @@ QTableWidget {
      <string>＜条件設定＞</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_table_lbl">
+   <widget class="QLabel" name="label_target_table">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -104,7 +220,7 @@ QTableWidget {
      <rect>
       <x>120</x>
       <y>40</y>
-      <width>220</width>
+      <width>161</width>
       <height>21</height>
      </rect>
     </property>
@@ -117,7 +233,7 @@ QTableWidget {
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_col_lbl">
+   <widget class="QLabel" name="label_condition_rules">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -157,7 +273,7 @@ QTableWidget {
    <widget class="QComboBox" name="cmb_operator">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>290</x>
       <y>70</y>
       <width>110</width>
       <height>21</height>
@@ -172,9 +288,9 @@ QTableWidget {
    <widget class="QTextEdit" name="text_cond_value">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>410</x>
       <y>70</y>
-      <width>211</width>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
@@ -193,26 +309,27 @@ QTableWidget {
    <widget class="QPushButton" name="btn_add_cond">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>710</x>
       <y>70</y>
       <width>50</width>
       <height>21</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton { background-color: #2563eb; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #1d4ed8; }</string>
+     <string notr="true">QPushButton { background-color: #2563eb; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #1d4ed8; }
+</string>
     </property>
     <property name="text">
      <string>追加</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_list_lbl">
+   <widget class="QLabel" name="label_current_conditions">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>100</y>
       <width>101</width>
-      <height>61</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
@@ -222,8 +339,7 @@ QTableWidget {
      </font>
     </property>
     <property name="text">
-     <string>現在の条件
-(AND結合)</string>
+     <string>現在の条件</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -234,8 +350,8 @@ QTableWidget {
      <rect>
       <x>120</x>
       <y>100</y>
-      <width>480</width>
-      <height>61</height>
+      <width>581</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
@@ -247,68 +363,26 @@ QTableWidget {
    <widget class="QPushButton" name="btn_del_cond">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>710</x>
       <y>100</y>
       <width>50</width>
       <height>21</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton { background-color: #dc2626; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #b91c1c; }</string>
+     <string notr="true">QPushButton { background-color: #dc2626; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #b91c1c; }
+</string>
     </property>
     <property name="text">
      <string>削除</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_keyword_lbl">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>170</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>結果内検索</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="text_keyword">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>170</y>
-      <width>481</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-    </property>
-    <property name="placeholderText">
-     <string>スペース区切りで、抽出されたデータをさらに横断絞り込みできます</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_title_result">
+   <widget class="QLabel" name="title_result">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>210</y>
-      <width>120</width>
+      <y>200</y>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
@@ -326,9 +400,9 @@ QTableWidget {
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>234</y>
+      <y>224</y>
       <width>931</width>
-      <height>351</height>
+      <height>361</height>
      </rect>
     </property>
     <property name="font">
@@ -336,17 +410,59 @@ QTableWidget {
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: #ffffff;
+    gridline-color: #475569;
+    border: 1px solid #475569;
+    padding: 1px;
+    border-radius: 4px;
+}
+/* 1. 列ヘッダー（上部）のデザイン設定 */
+QHeaderView::section:horizontal {
+    background-color: #94a3b8; /* 背景色 */
+    color: #ffffff;            /* 文字色 */
+    font-weight: bold;         /* 太字 */
+    border: 1px solid #172554; /* 枠線 */
+    text-align: left;          /* 左寄せ */
+　/* 💡【ここを追記】上下に12ピクセルの余白を作ることで、ヘッダーを高くします */
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+/* 2. 行ヘッダー（左側）のデザイン設定 */
+QHeaderView::section:vertical {
+    background-color: #94a3b8; /* 背景色 */
+    color: #ffffff;            /* 文字色 */
+    font-weight: bold;         /* 太字 */
+    border: 1px solid #172554; /* 枠線 */
+    
+    /* 💡【Qt6.11.1の絶対ルール】
+       CSSの text-align ではなく、Qt内部の配置プロパティを直接右寄せ(AlignRight)に上書きします。
+       大文字・小文字を厳密に区別するため、このままコピーしてください。 */
+    qproperty-defaultAlignment: 'AlignRight | AlignVCenter';
+    
+    padding-right: 6px;        /* 数字が枠線にベタッとくっつかないための隙間 */
+}
+</string>
+    </property>
     <property name="editTriggers">
      <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
     </property>
     <property name="selectionMode">
-     <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
+     <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
     </property>
     <property name="selectionBehavior">
      <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
     </property>
+    <attribute name="verticalHeaderMinimumSectionSize">
+     <number>20</number>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>20</number>
+    </attribute>
    </widget>
-   <widget class="QFrame" name="frame">
+   <widget class="QFrame" name="frame_btn">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -356,9 +472,9 @@ QTableWidget {
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #f1f5f9; border: 1px solid #475569; border-radius: 6px;</string>
+     <string notr="true"/>
     </property>
-    <widget class="QPushButton" name="pushButton_ESC">
+    <widget class="QPushButton" name="btn_back">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -384,7 +500,7 @@ QTableWidget {
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #1e3a8a; color: #ffffff !important; border: 1px solid #172554; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>CSV</string>
@@ -400,13 +516,13 @@ QTableWidget {
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #1e3a8a; color: #ffffff !important; border: 1px solid #172554; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #2563eb; border-color: #60a5fa; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>照会</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_10">
+    <widget class="QPushButton" name="btn_clear">
      <property name="geometry">
       <rect>
        <x>520</x>
@@ -416,7 +532,7 @@ QTableWidget {
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #e2e8f0; color: #475569 !important; border: 1px solid #475569; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #cbd5e1; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>クリア</string>
@@ -435,9 +551,7 @@ QTableWidget {
       <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">  background-color: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -456,9 +570,7 @@ QTableWidget {
       <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">  background-color: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -477,9 +589,7 @@ QTableWidget {
       <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">  background-color: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -498,9 +608,7 @@ QTableWidget {
       <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">  background-color: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -519,15 +627,13 @@ QTableWidget {
       <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">  background-color: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_dummy_11">
+    <widget class="QPushButton" name="btn_dummy_6">
      <property name="geometry">
       <rect>
        <x>400</x>
@@ -540,14 +646,44 @@ QTableWidget {
       <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">  background-color: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
+   </widget>
+   <widget class="QComboBox" name="cmb_join_type">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>70</y>
+      <width>89</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="word_count">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>200</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

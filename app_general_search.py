@@ -44,35 +44,39 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
         self.current_df = None  # 検索結果データ保持
         self.table_columns = []  # 現在選択中のテーブル列名（物理IDリスト）
         self.conditions_pool = []  # 追加された条件の内部プール
-        
+
         # 【日本語名称の自動管理用変数】
         self.header_mapping = {}  # { 物理ID: 日本語名 }
         self.col_name_to_id = {}  # { 日本語名: 物理ID } ◀ 条件逆変換用
         self.table_name_to_id = {}  # { テーブル表示名: 物理ID } ◀ テーブル逆変換用
-        
+
         self.init_ui()
 
     def init_ui(self):
         """UIの初期セットアップ（外観・シグナル接続）"""
         self.setupUi(self)
-        self.setWindowTitle("データベース汎用複数条件検索")
+        self.setWindowTitle("汎用検索")
         common_utils.set_common_window_icon(self)
 
         if hasattr(self, "cmb_operator"):
             self.cmb_operator.addItems(list(OPERATORS.keys()))
 
+        # 【OR条件用の選択肢拡張】
+        if hasattr(self, "cmb_join_type"):
+            self.cmb_join_type.clear()
+            self.cmb_join_type.addItems(["AND (かつ)", "OR (または)"])
+
         if hasattr(self, "cmb_table_name"):
             self.cmb_table_name.setFocus()
-            
+
             # 各テーブルの説明欄を自動取得してコンボボックスを構築
-            target_tables = ["T_TOKMST","T_SHIMST","T_NOUMST", "T_SHOMST"]
+            target_tables = ["T_TOKMST", "T_SHIMST", "T_NOUMST", "T_SHOMST"]
             display_tables = []
             self.table_name_to_id.clear()
-            
+
             conn = common_utils.get_db_connection()
             try:
                 for t_id in target_tables:
-                    # テーブル自体の説明欄(minor_id=0)を取得するクエリ
                     t_desc_query = """
                         SELECT CAST(ep.value AS NVARCHAR)
                         FROM sys.tables t
@@ -85,12 +89,12 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
                     with conn.cursor() as cursor:
                         cursor.execute(t_desc_query, (t_id,))
                         row = cursor.fetchone()
-                        # 💡【修正箇所】物理名を含めず、日本語説明のみを表示名として採用します
+                        # 💡【カッコバグ修正】rowが取得できた場合、row[0]で中の純粋な文字列だけを抽出します
                         if row and row[0] and str(row[0]).strip():
                             t_name = str(row[0]).strip()
                         else:
                             t_name = t_id
-                    
+
                     display_tables.append(t_name)
                     self.table_name_to_id[t_name] = t_id
             except Exception as e:
@@ -109,11 +113,11 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
         if hasattr(self, "btn_del_cond"):
             self.btn_del_cond.clicked.connect(self.delete_condition)
 
-        if hasattr(self, "pushButton_ESC"):
-            self.pushButton_ESC.clicked.connect(self.close_window)
+        if hasattr(self, "btn_back"):
+            self.btn_back.clicked.connect(self.close_window)
 
-        if hasattr(self, "pushButton_10"):
-            self.pushButton_10.clicked.connect(self.clear_ui)
+        if hasattr(self, "btn_clear"):
+            self.btn_clear.clicked.connect(self.clear_ui)
 
         if hasattr(self, "btn_exe_inquiry"):
             self.btn_exe_inquiry.clicked.connect(self.run_query)
@@ -122,6 +126,10 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
             self.btn_exe_csv.clicked.connect(self.export_csv)
 
         self.load_table_columns()
+        
+        # 起動時（初期状態）に件数表示を確実にクリア
+        if hasattr(self, "word_count"):
+            self.word_count.clear()
 
     def on_table_changed(self):
         """テーブル変更時の初期化ハンドラ"""
@@ -139,22 +147,18 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
         if not table_display:
             return
 
-        # 表示用の日本語名から、SQL用の物理テーブルID（T_URHDATなど）を逆引き
         table_name = self.table_name_to_id.get(table_display, table_display)
 
         self.cmb_column_name.clear()
         self.col_name_to_id.clear()
-        
+
         conn = common_utils.get_db_connection()
         try:
             clean_table_name = "".join([c for c in table_name if c.isalnum() or c == "_"])
-            
-            # 1. 物理スキーマ（列名）を取得
             schema_query = f"SELECT TOP 1 * FROM {clean_table_name}"
             df_schema = pd.read_sql(schema_query, conn)
             self.table_columns = df_schema.columns.tolist()
 
-            # 2. SQL Server拡張プロパティから日本語説明欄を一括取得
             local_map = {}
             desc_query = """
                 SELECT c.name, CAST(ep.value AS NVARCHAR)
@@ -172,13 +176,12 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
                     if col_name and str(col_name).strip():
                         local_map[col_id] = str(col_name).strip()
 
-            # 3. コンボボックス用表示アイテムの作成
             display_items = []
             for col in self.table_columns:
                 if col in local_map:
                     jp_name = local_map[col]
                     display_items.append(jp_name)
-                    self.col_name_to_id[jp_name] = col  # 日本語名から物理IDへの逆引き用
+                    self.col_name_to_id[jp_name] = col
                 else:
                     display_items.append(col)
                     self.col_name_to_id[col] = col
@@ -207,42 +210,61 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
             QMessageBox.warning(self, "入力チェック", "列名と検索値を正しく入力・指定してください。")
             return
 
-        # 表示されている日本語名から、対応する内部物理IDを安全に逆引き
         col_id = self.col_name_to_id.get(col_display, col_display)
 
+        join_type = "AND"
+        join_display = " [AND]"
+        if hasattr(self, "cmb_join_type"):
+            selected_join = self.cmb_join_type.currentText()
+            if "OR" in selected_join:
+                join_type = "OR"
+                join_display = " [OR]"
+
+        if self.listWidget_conds.count() == 0:
+            join_display = ""
+
         cond_item = {
-            "column": col_id,  # 内部のSQLクエリ組み立てには物理IDを使用
+            "column": col_id,
             "op_type": OPERATORS[op_display],
             "value": val,
-            "display": f"【{col_display}】 {op_display} '{val}'",  # 画面用リストには日本語で表示
+            "join_type": join_type,
+            "display": f"{join_display} 【{col_display}】 {op_display} '{val}'",
         }
         self.conditions_pool.append(cond_item)
         self.listWidget_conds.addItem(cond_item["display"])
         self.text_cond_value.clear()
 
     def delete_condition(self):
-        """選択条件の削除処理"""
+        """選択条件の削除処理と、先頭アイテムの表示文字列補正"""
         if hasattr(self, "listWidget_conds"):
             current_row = self.listWidget_conds.currentRow()
             if current_row >= 0:
                 self.listWidget_conds.takeItem(current_row)
                 self.conditions_pool.pop(current_row)
 
+                if current_row == 0 and self.listWidget_conds.count() > 0:
+                    first_item = self.listWidget_conds.item(0)
+                    clean_text = first_item.text().replace(" [AND] ", "").replace(" [OR] ", "")
+                    first_item.setText(clean_text)
+
     def clear_ui(self):
         """【クリアボタン押下時】完全リセット"""
         if hasattr(self, "cmb_table_name"):
             self.cmb_table_name.setCurrentIndex(0)
+        if hasattr(self, "cmb_join_type"):
+            self.cmb_join_type.setCurrentIndex(0)
         if hasattr(self, "text_cond_value"):
             self.text_cond_value.clear()
         if hasattr(self, "text_keyword"):
             self.text_keyword.clear()
-        if hasattr(self, "label_Count"):
-            self.label_Count.clear()
+        
+        if hasattr(self, "word_count"):
+            self.word_count.clear()
 
         self.conditions_pool.clear()
         if hasattr(self, "listWidget_conds"):
             self.listWidget_conds.clear()
-        
+
         self.header_mapping.clear()
         self.col_name_to_id.clear()
 
@@ -271,33 +293,40 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
             QMessageBox.warning(self, "入力エラー", "テーブル名を選択または入力してください。")
             return
 
-        # 表示用の日本語名から、SQL用の物理テーブルID（T_URHDATなど）を逆引き
+        # 表示用の日本語名から、SQL用の物理テーブルIDを逆引き
         table_name = self.table_name_to_id.get(table_display, table_display)
 
         conn = common_utils.get_db_connection()
         try:
             clean_table_name = "".join([c for c in table_name if c.isalnum() or c == "_"])
             query_string = f"SELECT TOP {MAX_ROWS} * FROM {clean_table_name}"
-            where_clauses = []
+            
+            where_clause = ""
             params = []
 
-            for cond in self.conditions_pool:
+            for idx, cond in enumerate(self.conditions_pool):
                 clean_col = "".join([c for c in cond["column"] if c.isalnum() or c == "_"])
                 op = cond["op_type"]
                 val = cond["value"]
+                join_type = cond["join_type"]
 
                 if op == "LIKE":
-                    where_clauses.append(f"{clean_col} LIKE ?")
+                    current_clause = f"{clean_col} LIKE ?"
                     params.append(f"%{val}%")
                 elif op == "START":
-                    where_clauses.append(f"{clean_col} LIKE ?")
+                    current_clause = f"{clean_col} LIKE ?"
                     params.append(f"{val}%")
                 else:
-                    where_clauses.append(f"{clean_col} {op} ?")
+                    current_clause = f"{clean_col} {op} ?"
                     params.append(val)
 
-            if where_clauses:
-                query_string += " WHERE " + " AND ".join(where_clauses)
+                if idx == 0:
+                    where_clause = current_clause
+                else:
+                    where_clause = f"({where_clause}) {join_type} ({current_clause})"
+
+            if where_clause:
+                query_string += " WHERE " + where_clause
 
             if params:
                 df = pd.read_sql(query_string, conn, params=params)
@@ -364,7 +393,7 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
                 self.tableWidget.setRowCount(0)
                 self.tableWidget.setColumnCount(len(df.columns))
                 
-                # 自動日本語優先ヘッターン適用
+                # 自動日本語優先ヘッダーの適用
                 headers = []
                 for col in df.columns:
                     if col in self.header_mapping:
@@ -386,9 +415,9 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
                         self.tableWidget.setItem(row_idx, col_idx, QTableWidgetItem(item_text))
 
                 self.tableWidget.resizeColumnsToContents()
-
-            if hasattr(self, "label_Count"):
-                self.label_Count.setText(f"表示件数: {len(df):,} 件")
+                
+            if hasattr(self, "word_count"):
+                self.word_count.setText(f"{len(df):,}件")
 
         except Exception as e:
             QMessageBox.critical(self, "エラー", f"データ取得中にエラーが発生しました:\n{e}")
@@ -406,7 +435,6 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
             if hasattr(self, "cmb_table_name")
             else "汎用検索結果"
         )
-        # 保存ファイル名用に日本語表示名から物理ID（T_URHDATなど）を逆引き
         table_name = self.table_name_to_id.get(table_display, table_display)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -415,7 +443,7 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
         save_path = os.path.join(desktop_path, file_name)
 
         try:
-            self.current_df.to_csv(save_path, index=False, encoding="utf_sig")
+            self.current_df.to_csv(save_path, index=False, encoding="utf_8_sig")
             QMessageBox.information(self, "完了", f"CSV出力が完了しました。\n 保存先: {save_path}")
         except PermissionError:
             QMessageBox.critical(self, "エラー", "ファイルが開いています。閉じてから再実行してください。")
