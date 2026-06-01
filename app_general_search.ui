@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>968</width>
-    <height>671</height>
+    <width>969</width>
+    <height>677</height>
    </rect>
   </property>
   <property name="font">
@@ -25,15 +25,15 @@
   <property name="styleSheet">
    <string notr="true">/*  ウインドウのスタイル */
 QMainWindow {
-    background-color: #f8fafc;
+    background-color: #e2e8f0;
 }
 
-/* タイトルラベルのスタイル */
+/* ラベル：タイトルのスタイル */
 QLabel[objectName^=&quot;title_&quot;]  {
     color: #1e3a8a;
 }
 
-/* 入力項目ラベルのスタイル */
+/* ラベル：入力項目のスタイル */
 QLabel[objectName^=&quot;label_&quot;]  {
     background-color: #64748b;
     color: #ffffff;
@@ -42,7 +42,16 @@ QLabel[objectName^=&quot;label_&quot;]  {
     border-radius: 4px;
 }
 
-/* 入力項目表示データのスタイル */
+/* ラベル：表示項目のスタイル */
+QLabel[objectName^=&quot;label_disp_&quot;]  {
+    background-color: #94a3b8;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #475569;
+    border-radius: 4px;
+}
+
+/* ラベル：表示データのスタイル */
 QLabel[objectName^=&quot;data_&quot;]  {
     background-color: #f1f5f9;
     color: #334155;
@@ -52,7 +61,7 @@ QLabel[objectName^=&quot;data_&quot;]  {
     padding: 1px;
 }
 
-/* 入力項目テキスト（QTextEdit）のスタイル */
+/* 入力項目：テキスト（QTextEdit）のスタイル */
 QTextEdit {
     background-color: #ffffff;
     color: #0f172a;
@@ -60,8 +69,12 @@ QTextEdit {
     border-radius: 4px;
     padding: 1px;
 }
+QTextEdit:focus {
+    background-color: #f8fafc;
+    border: 1px solid #3b82f6;
+}
 
-/* 入力項目日付（QDateEdit）のスタイル */
+/* 入力項目：日付（QDateEdit）のスタイル */
 QDateEdit {
     background-color: #ffffff;
     color: #0f172a;
@@ -74,27 +87,31 @@ QDateEdit:focus {
     border: 1px solid #3b82f6;
 }
 
-/* 入力項目コンボボックス（QComboBox）のスタイル */
-
-
-/* 表示項目ラベルのスタイル */
-QLabel[objectName^=&quot;label_disp_&quot;]  {
-    background-color: #94a3b8;
-    color: #ffffff;
-    font-weight: bold;
-    border: 1px solid #475569;
+/* 入力項目：コンボボックス（QComboBox）のスタイル */
+QComboBox, QListWidget {
+    background-color: #ffffff;
+    border: 1px solid #94a3b8;
     border-radius: 4px;
+    padding: 1px;
+    color: #0f172a;
+}
+QComboBox:focus {
+    background-color: #f8fafc;
+    border: 1px solid #3b82f6;
 }
 
-/* フレームのスタイル */
-QFrame#frame_btn {
-    background-color: #f1f5f9; 
+/* 入力項目：リストのスタイル */
+QListWidget {
+    background-color: #f1f5f9;
+    color: #334155;
+    font-weight: bold;
     border: 1px solid #94a3b8;
-    border-radius: 6px;
+    border-radius: 4px;
+    padding: 1px;
 }
-QFrame#frame_search_results {
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
+QListWidget:focus {
+    background-color: #f8fafc;
+    border: 1px solid #3b82f6;
 }
 
 /* テーブルのスタイル */
@@ -106,7 +123,7 @@ QTableWidget {
     border-radius: 4px;
 }
 
-/* 通常ボタンのスタイル */
+/* ボタン：通常のスタイル */
 QPushButton[objectName^=&quot;btn_exe_&quot;] {
     background-color: #1e3a8a;
     color: #ffffff;
@@ -124,13 +141,13 @@ QPushButton[objectName^=&quot;btn_exe_&quot;]:pressed {
     color: #eff6ff;
 }
 
-/* 戻るボタン、クリアボタンのスタイル */
+/* ボタン：戻る、クリアのスタイル */
 QPushButton#btn_back, 
 QPushButton#btn_clear { 
     background-color: #e2e8f0;
     color: #475569;
     font-weight: bold; 
-    border: 1px solid #475569;
+    border: 1px solid #94a3b8;
     border-radius: 6px;
 }
 QPushButton#btn_back:hover, 
@@ -146,275 +163,373 @@ QPushButton#btn_clear:pressed {
     border: 1px solid #1e293b;
 }
 
-/* ダミーボタンのスタイル */
+/* ボタン：ダミーのスタイル */
 QPushButton[objectName^=&quot;btn_dummy_&quot;] {
     background-color: #f1f5f9; 
     border: 1px solid #cbd5e1;
     border-radius: 6px;
 }
 
-QComboBox, QTextEdit, QListWidget {
-    background-color: #ffffff;
+/*フレームのスタイル */
+QFrame#frame_btn {
+    background-color: #cbd5e1; 
     border: 1px solid #94a3b8;
-    border-radius: 4px;
-    padding: 1px;
-    color: #0f172a;
+    border-radius: 6px;
 }
-QComboBox:focus, QTextEdit:focus, QListWidget:focus {
-    border: 1px solid #3b82f6;
-    background-color: #f8fafc;
-}
-QTableWidget {
-    background-color: #ffffff;
-    gridline-color: #475569;
-    border: 1px solid #475569;
-    padding: 1px;
-    border-radius: 4px;
-}
-</string>
+QFrame#frame_search_results {
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="title_cond">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>10</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>20</number>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
+    <property name="topMargin">
+     <number>10</number>
     </property>
-    <property name="text">
-     <string>＜条件設定＞</string>
+    <property name="rightMargin">
+     <number>20</number>
     </property>
-   </widget>
-   <widget class="QLabel" name="label_target_table">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>40</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
+    <property name="bottomMargin">
+     <number>6</number>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>対象テーブル</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cmb_table_name">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>40</y>
-      <width>161</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="editable">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_condition_rules">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>70</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>条件の規則</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cmb_column_name">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>70</y>
-      <width>160</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cmb_operator">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>70</y>
-      <width>110</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="text_cond_value">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>70</y>
-      <width>191</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-    </property>
-    <property name="placeholderText">
-     <string>値を入力</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_add_cond">
-    <property name="geometry">
-     <rect>
-      <x>710</x>
-      <y>70</y>
-      <width>50</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton { background-color: #2563eb; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #1d4ed8; }
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="maximumSize">
+       <size>
+        <width>750</width>
+        <height>166</height>
+       </size>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
+        <number>12</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>2</number>
+       </property>
+       <item row="3" column="1" colspan="4">
+        <widget class="QListWidget" name="listWidget_conds">
+         <property name="minimumSize">
+          <size>
+           <width>570</width>
+           <height>72</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>570</width>
+           <height>72</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="cmb_column_name">
+         <property name="minimumSize">
+          <size>
+           <width>160</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>160</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QTextEdit" name="text_cond_value">
+         <property name="minimumSize">
+          <size>
+           <width>194</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>194</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="placeholderText">
+          <string>値を入力</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="QPushButton" name="btn_add_cond">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton { background-color: #2563eb; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #1d4ed8; }
 </string>
-    </property>
-    <property name="text">
-     <string>追加</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_current_conditions">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>100</y>
-      <width>101</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>現在の条件</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="listWidget_conds">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>100</y>
-      <width>581</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_del_cond">
-    <property name="geometry">
-     <rect>
-      <x>710</x>
-      <y>100</y>
-      <width>50</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton { background-color: #dc2626; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #b91c1c; }
+         </property>
+         <property name="text">
+          <string>追加</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QComboBox" name="cmb_join_type">
+         <property name="minimumSize">
+          <size>
+           <width>98</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>98</width>
+           <height>21</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_current_conditions">
+         <property name="minimumSize">
+          <size>
+           <width>101</width>
+           <height>71</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>71</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>現在の条件</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="title_cond">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>＜条件設定＞</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="cmb_table_name">
+         <property name="minimumSize">
+          <size>
+           <width>160</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>160</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_condition_rules">
+         <property name="minimumSize">
+          <size>
+           <width>101</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>条件の規則</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_target_table">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>101</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>対象テーブル</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="cmb_operator">
+         <property name="minimumSize">
+          <size>
+           <width>110</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>110</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5">
+        <widget class="QPushButton" name="btn_del_cond">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton { background-color: #dc2626; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #b91c1c; }
 </string>
-    </property>
-    <property name="text">
-     <string>削除</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="title_result">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>200</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>＜照会結果＞</string>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>224</y>
-      <width>931</width>
-      <height>361</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QTableWidget {
+         </property>
+         <property name="text">
+          <string>削除</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="title_result">
+      <property name="maximumSize">
+       <size>
+        <width>101</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>＜照会結果＞</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QTableWidget {
     background-color: #ffffff;
-    gridline-color: #475569;
-    border: 1px solid #475569;
+    gridline-color: #94a3b8;
+    border: 1px solid #94a3b8;
     padding: 1px;
     border-radius: 4px;
 }
@@ -445,259 +560,393 @@ QHeaderView::section:vertical {
     padding-right: 6px;        /* 数字が枠線にベタッとくっつかないための隙間 */
 }
 </string>
-    </property>
-    <property name="editTriggers">
-     <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
-    </property>
-    <property name="selectionMode">
-     <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
-    </property>
-    <property name="selectionBehavior">
-     <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
-    </property>
-    <attribute name="verticalHeaderMinimumSectionSize">
-     <number>20</number>
-    </attribute>
-    <attribute name="verticalHeaderDefaultSectionSize">
-     <number>20</number>
-    </attribute>
-   </widget>
-   <widget class="QFrame" name="frame_btn">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>590</y>
-      <width>931</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <widget class="QPushButton" name="btn_back">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton { background-color: #e2e8f0; color: #475569 !important; border: 1px solid #475569; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #cbd5e1; }</string>
-     </property>
-     <property name="text">
-      <string>戻る</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_exe_csv">
-     <property name="geometry">
-      <rect>
-       <x>580</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string>CSV</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_exe_inquiry">
-     <property name="geometry">
-      <rect>
-       <x>460</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string>照会</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_clear">
-     <property name="geometry">
-      <rect>
-       <x>520</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string>クリア</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_dummy_1">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_dummy_2">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_dummy_3">
-     <property name="geometry">
-      <rect>
-       <x>220</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_dummy_4">
-     <property name="geometry">
-      <rect>
-       <x>280</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_dummy_5">
-     <property name="geometry">
-      <rect>
-       <x>340</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_dummy_6">
-     <property name="geometry">
-      <rect>
-       <x>400</x>
-       <y>10</y>
-       <width>51</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QComboBox" name="cmb_join_type">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>70</y>
-      <width>89</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="word_count">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>200</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+      </property>
+      <attribute name="verticalHeaderMinimumSectionSize">
+       <number>20</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>20</number>
+      </attribute>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="word_count">
+      <property name="maximumSize">
+       <size>
+        <width>101</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame_btn">
+      <property name="minimumSize">
+       <size>
+        <width>622</width>
+        <height>51</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>622</width>
+        <height>51</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="btn_back">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>戻る</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_dummy_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_dummy_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_dummy_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_dummy_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_dummy_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_dummy_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_exe_inquiry">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>照会</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_clear">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_exe_csv">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>CSV</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>968</width>
+     <width>969</width>
      <height>33</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>cmb_table_name</tabstop>
+  <tabstop>cmb_column_name</tabstop>
+  <tabstop>cmb_operator</tabstop>
+  <tabstop>text_cond_value</tabstop>
+  <tabstop>cmb_join_type</tabstop>
+  <tabstop>btn_add_cond</tabstop>
+  <tabstop>btn_del_cond</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>btn_back</tabstop>
+  <tabstop>btn_exe_inquiry</tabstop>
+  <tabstop>btn_clear</tabstop>
+  <tabstop>btn_exe_csv</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

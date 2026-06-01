@@ -124,7 +124,7 @@ QStackedWidget QPushButton:disabled {
         <number>10</number>
        </property>
        <property name="topMargin">
-        <number>20</number>
+        <number>15</number>
        </property>
        <property name="rightMargin">
         <number>10</number>
@@ -145,7 +145,7 @@ QStackedWidget QPushButton:disabled {
           <string notr="true">color: #ffffff; margin-bottom: 15px;</string>
          </property>
          <property name="text">
-          <string>業務支援メニュー</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -162,7 +162,7 @@ QStackedWidget QPushButton:disabled {
          </property>
          <property name="font">
           <font>
-           <family>Meiryo</family>
+           <family>Yu Gothic UI</family>
            <pointsize>11</pointsize>
            <bold>true</bold>
           </font>
@@ -185,7 +185,7 @@ QStackedWidget QPushButton:disabled {
          </property>
          <property name="font">
           <font>
-           <family>Meiryo</family>
+           <family>Yu Gothic UI</family>
            <pointsize>11</pointsize>
            <bold>true</bold>
           </font>
@@ -208,7 +208,7 @@ QStackedWidget QPushButton:disabled {
          </property>
          <property name="font">
           <font>
-           <family>Meiryo</family>
+           <family>Yu Gothic UI</family>
            <pointsize>11</pointsize>
            <bold>true</bold>
           </font>
@@ -231,7 +231,7 @@ QStackedWidget QPushButton:disabled {
          </property>
          <property name="font">
           <font>
-           <family>Meiryo</family>
+           <family>Yu Gothic UI</family>
            <pointsize>11</pointsize>
            <bold>true</bold>
           </font>
@@ -254,7 +254,7 @@ QStackedWidget QPushButton:disabled {
          </property>
          <property name="font">
           <font>
-           <family>Meiryo</family>
+           <family>Yu Gothic UI</family>
            <pointsize>11</pointsize>
            <bold>true</bold>
           </font>
@@ -310,7 +310,7 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
 </string>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_common">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -318,7 +318,7 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
          <number>30</number>
         </property>
         <property name="topMargin">
-         <number>30</number>
+         <number>20</number>
         </property>
         <property name="rightMargin">
          <number>30</number>
@@ -328,18 +328,30 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
         </property>
         <item>
          <widget class="QLabel" name="title_common">
+          <property name="minimumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <family>Meiryo</family>
+            <family>Yu Gothic UI</family>
             <pointsize>14</pointsize>
             <bold>true</bold>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+           <string notr="true">color: #1e293b;margin-bottom: 10px;</string>
           </property>
           <property name="text">
-           <string>共通 業務メニュー</string>
+           <string>共通　業務支援メニュー</string>
           </property>
          </widget>
         </item>
@@ -403,7 +415,7 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
          <number>30</number>
         </property>
         <property name="topMargin">
-         <number>30</number>
+         <number>20</number>
         </property>
         <property name="rightMargin">
          <number>30</number>
@@ -413,18 +425,30 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
         </property>
         <item>
          <widget class="QLabel" name="title_qa">
+          <property name="minimumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <family>Meiryo</family>
+            <family>Yu Gothic</family>
             <pointsize>14</pointsize>
             <bold>true</bold>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+           <string notr="true">color: #1e293b; margin-bottom: 10px;</string>
           </property>
           <property name="text">
-           <string>品質保証部 業務メニュー</string>
+           <string>品質保証部　業務支援メニュー</string>
           </property>
          </widget>
         </item>
@@ -449,7 +473,7 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
          <number>30</number>
         </property>
         <property name="topMargin">
-         <number>30</number>
+         <number>20</number>
         </property>
         <property name="rightMargin">
          <number>30</number>
@@ -459,18 +483,30 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
         </property>
         <item>
          <widget class="QLabel" name="title_sales">
+          <property name="minimumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <family>Meiryo</family>
+            <family>Yu Gothic</family>
             <pointsize>14</pointsize>
             <bold>true</bold>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+           <string notr="true">color: #1e293b; margin-bottom: 10px;</string>
           </property>
           <property name="text">
-           <string>営業技術部 業務メニュー</string>
+           <string>営業技術部　業務支援メニュー</string>
           </property>
          </widget>
         </item>
@@ -534,7 +570,7 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
          <number>30</number>
         </property>
         <property name="topMargin">
-         <number>30</number>
+         <number>20</number>
         </property>
         <property name="rightMargin">
          <number>30</number>
@@ -544,18 +580,30 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
         </property>
         <item>
          <widget class="QLabel" name="title_admin">
+          <property name="minimumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <family>Meiryo</family>
+            <family>Yu Gothic UI</family>
             <pointsize>14</pointsize>
             <bold>true</bold>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+           <string notr="true">color: #1e293b; margin-bottom: 10px;</string>
           </property>
           <property name="text">
-           <string>総務部 業務メニュー</string>
+           <string>総務部　業務支援メニュー</string>
           </property>
          </widget>
         </item>
@@ -626,7 +674,7 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
          <number>30</number>
         </property>
         <property name="topMargin">
-         <number>30</number>
+         <number>20</number>
         </property>
         <property name="rightMargin">
          <number>30</number>
@@ -636,18 +684,30 @@ QStackedWidget QPushButton#btn_Nouhin:focus {
         </property>
         <item>
          <widget class="QLabel" name="title_factory">
+          <property name="minimumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>510</width>
+            <height>38</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <family>Meiryo</family>
+            <family>Yu Gothic UI</family>
             <pointsize>14</pointsize>
             <bold>true</bold>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: #1e293b; margin-bottom: 20px;</string>
+           <string notr="true">color: #1e293b; margin-bottom: 10px;</string>
           </property>
           <property name="text">
-           <string>製造部 業務メニュー</string>
+           <string>製造部　業務支援メニュー</string>
           </property>
          </widget>
         </item>

@@ -16,16 +16,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QFrame,
-    QHeaderView, QLabel, QListWidget, QListWidgetItem,
-    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
-    QStatusBar, QTableWidget, QTableWidgetItem, QTextEdit,
-    QWidget)
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QListWidget, QListWidgetItem, QMainWindow, QMenuBar,
+    QPushButton, QSizePolicy, QStatusBar, QTableWidget,
+    QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(968, 671)
+        MainWindow.resize(969, 677)
         font = QFont()
         font.setFamilies([u"Yu Gothic UI"])
         font.setPointSize(10)
@@ -34,15 +34,15 @@ class Ui_MainWindow(object):
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet(u"/*  \u30a6\u30a4\u30f3\u30c9\u30a6\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QMainWindow {\n"
-"    background-color: #f8fafc;\n"
+"    background-color: #e2e8f0;\n"
 "}\n"
 "\n"
-"/* \u30bf\u30a4\u30c8\u30eb\u30e9\u30d9\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u30e9\u30d9\u30eb\uff1a\u30bf\u30a4\u30c8\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QLabel[objectName^=\"title_\"]  {\n"
 "    color: #1e3a8a;\n"
 "}\n"
 "\n"
-"/* \u5165\u529b\u9805\u76ee\u30e9\u30d9\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u30e9\u30d9\u30eb\uff1a\u5165\u529b\u9805\u76ee\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QLabel[objectName^=\"label_\"]  {\n"
 "    background-color: #64748b;\n"
 "    color: #ffffff;\n"
@@ -51,9 +51,19 @@ class Ui_MainWindow(object):
 "    border-radius: 4px;\n"
 "}\n"
 "\n"
-"/* \u5165\u529b\u9805\u76ee\u8868\u793a\u30c7\u30fc\u30bf\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u30e9\u30d9\u30eb\uff1a\u8868\u793a\u9805\u76ee\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"QLabel[objectName^=\"label_disp_\"]  {\n"
+"    background-color: #94a3b8;\n"
+"    color: #ffffff;\n"
+"    font-weight: bold;\n"
+"    border: 1px solid #475569;\n"
+"    border-radius: 4px;\n"
+"}\n"
+"\n"
+"/* \u30e9\u30d9\u30eb\uff1a\u8868\u793a\u30c7\u30fc\u30bf\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QLabel[objectName^=\"data_\"]  {\n"
-"    background-color: #f1f5f9;\n"
+"    background-c"
+                        "olor: #f1f5f9;\n"
 "    color: #334155;\n"
 "    font-weight: bold;\n"
 "    border: 1px solid #475569;\n"
@@ -61,17 +71,20 @@ class Ui_MainWindow(object):
 "    padding: 1px;\n"
 "}\n"
 "\n"
-"/* \u5165\u529b\u9805\u76ee\u30c6\u30ad\u30b9\u30c8\uff08QTextEdit\uff09\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u5165\u529b\u9805\u76ee\uff1a\u30c6\u30ad\u30b9\u30c8\uff08QTextEdit\uff09\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QTextEdit {\n"
-"    backgrou"
-                        "nd-color: #ffffff;\n"
+"    background-color: #ffffff;\n"
 "    color: #0f172a;\n"
 "    border: 1px solid #94a3b8;\n"
 "    border-radius: 4px;\n"
 "    padding: 1px;\n"
 "}\n"
+"QTextEdit:focus {\n"
+"    background-color: #f8fafc;\n"
+"    border: 1px solid #3b82f6;\n"
+"}\n"
 "\n"
-"/* \u5165\u529b\u9805\u76ee\u65e5\u4ed8\uff08QDateEdit\uff09\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u5165\u529b\u9805\u76ee\uff1a\u65e5\u4ed8\uff08QDateEdit\uff09\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QDateEdit {\n"
 "    background-color: #ffffff;\n"
 "    color: #0f172a;\n"
@@ -84,28 +97,32 @@ class Ui_MainWindow(object):
 "    border: 1px solid #3b82f6;\n"
 "}\n"
 "\n"
-"/* \u5165\u529b\u9805\u76ee\u30b3\u30f3\u30dc\u30dc\u30c3\u30af\u30b9\uff08QComboBox\uff09\u306e\u30b9\u30bf\u30a4\u30eb */\n"
-"\n"
-"\n"
-"/* \u8868\u793a\u9805\u76ee\u30e9\u30d9\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
-"QLabel[objectName^=\"label_disp_\"]  {\n"
-"    background-color: #94a3b8;\n"
-"    color: #ffffff;\n"
-"    font-weight: bold;\n"
-"    border: 1px solid #475569;\n"
+"/* \u5165\u529b\u9805\u76ee\uff1a\u30b3\u30f3\u30dc\u30dc\u30c3\u30af\u30b9\uff08QComboBox\uff09\u306e"
+                        "\u30b9\u30bf\u30a4\u30eb */\n"
+"QComboBox, QListWidget {\n"
+"    background-color: #ffffff;\n"
+"    border: 1px solid #94a3b8;\n"
 "    border-radius: 4px;\n"
+"    padding: 1px;\n"
+"    color: #0f172a;\n"
+"}\n"
+"QComboBox:focus {\n"
+"    background-color: #f8fafc;\n"
+"    border: 1px solid #3b82f6;\n"
 "}\n"
 "\n"
-"/* \u30d5\u30ec\u30fc\u30e0\u306e\u30b9\u30bf\u30a4\u30eb */\n"
-"QFrame#frame_btn {\n"
-""
-                        "    background-color: #f1f5f9; \n"
+"/* \u5165\u529b\u9805\u76ee\uff1a\u30ea\u30b9\u30c8\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"QListWidget {\n"
+"    background-color: #f1f5f9;\n"
+"    color: #334155;\n"
+"    font-weight: bold;\n"
 "    border: 1px solid #94a3b8;\n"
-"    border-radius: 6px;\n"
+"    border-radius: 4px;\n"
+"    padding: 1px;\n"
 "}\n"
-"QFrame#frame_search_results {\n"
-"    border: 1px solid #94a3b8;\n"
-"    border-radius: 6px;\n"
+"QListWidget:focus {\n"
+"    background-color: #f8fafc;\n"
+"    border: 1px solid #3b82f6;\n"
 "}\n"
 "\n"
 "/* \u30c6\u30fc\u30d6\u30eb\u306e\u30b9\u30bf\u30a4\u30eb */\n"
@@ -117,8 +134,9 @@ class Ui_MainWindow(object):
 "    border-radius: 4px;\n"
 "}\n"
 "\n"
-"/* \u901a\u5e38\u30dc\u30bf\u30f3\u306e\u30b9\u30bf\u30a4\u30eb */\n"
-"QPushButton[objectName^=\"btn_exe_\"] {\n"
+"/* \u30dc\u30bf\u30f3\uff1a\u901a\u5e38\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+""
+                        "QPushButton[objectName^=\"btn_exe_\"] {\n"
 "    background-color: #1e3a8a;\n"
 "    color: #ffffff;\n"
 "    font-weight: bold;\n"
@@ -135,14 +153,13 @@ class Ui_MainWindow(object):
 "    color: #eff6ff;\n"
 "}\n"
 "\n"
-"/* \u623b\u308b\u30dc"
-                        "\u30bf\u30f3\u3001\u30af\u30ea\u30a2\u30dc\u30bf\u30f3\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u30dc\u30bf\u30f3\uff1a\u623b\u308b\u3001\u30af\u30ea\u30a2\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QPushButton#btn_back, \n"
 "QPushButton#btn_clear { \n"
 "    background-color: #e2e8f0;\n"
 "    color: #475569;\n"
 "    font-weight: bold; \n"
-"    border: 1px solid #475569;\n"
+"    border: 1px solid #94a3b8;\n"
 "    border-radius: 6px;\n"
 "}\n"
 "QPushButton#btn_back:hover, \n"
@@ -152,109 +169,165 @@ class Ui_MainWindow(object):
 "    border: 1px solid #334155;\n"
 "}\n"
 "QPushButton#btn_back:pressed, \n"
-"QPushButton#btn_clear:pressed { \n"
+"QPushButton#btn_clear:p"
+                        "ressed { \n"
 "    background-color: #94a3b8;\n"
 "    color: #1e293b; \n"
 "    border: 1px solid #1e293b;\n"
 "}\n"
 "\n"
-"/* \u30c0\u30df\u30fc\u30dc\u30bf\u30f3\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"/* \u30dc\u30bf\u30f3\uff1a\u30c0\u30df\u30fc\u306e\u30b9\u30bf\u30a4\u30eb */\n"
 "QPushButton[objectName^=\"btn_dummy_\"] {\n"
 "    background-color: #f1f5f9; \n"
 "    border: 1px solid #cbd5e1;\n"
 "    border-radius: 6px;\n"
 "}\n"
 "\n"
-"QComboBox, QTextEdit, QListWidget {\n"
-"    background-color: #ffffff;\n"
+"/*\u30d5\u30ec\u30fc\u30e0\u306e\u30b9\u30bf\u30a4\u30eb */\n"
+"QFrame#frame_btn {\n"
+"    background-color: #cbd5e1; \n"
 "    border: 1px solid #94a3b8;\n"
-"    border-radius: 4"
-                        "px;\n"
-"    padding: 1px;\n"
-"    color: #0f172a;\n"
+"    border-radius: 6px;\n"
 "}\n"
-"QComboBox:focus, QTextEdit:focus, QListWidget:focus {\n"
-"    border: 1px solid #3b82f6;\n"
-"    background-color: #f8fafc;\n"
-"}\n"
-"QTableWidget {\n"
-"    background-color: #ffffff;\n"
-"    gridline-color: #475569;\n"
-"    border: 1px solid #475569;\n"
-"    padding: 1px;\n"
-"    border-radius: 4px;\n"
-"}\n"
-"")
+"QFrame#frame_search_results {\n"
+"    border: 1px solid #94a3b8;\n"
+"    border-radius: 6px;\n"
+"}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.title_cond = QLabel(self.centralwidget)
-        self.title_cond.setObjectName(u"title_cond")
-        self.title_cond.setGeometry(QRect(30, 10, 81, 16))
+        self.verticalLayout = QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(20, 10, 20, 6)
+        self.widget = QWidget(self.centralwidget)
+        self.widget.setObjectName(u"widget")
+        self.widget.setMaximumSize(QSize(750, 166))
+        self.gridLayout = QGridLayout(self.widget)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setHorizontalSpacing(2)
+        self.gridLayout.setContentsMargins(0, 0, 16, 12)
+        self.listWidget_conds = QListWidget(self.widget)
+        self.listWidget_conds.setObjectName(u"listWidget_conds")
+        self.listWidget_conds.setMinimumSize(QSize(570, 72))
+        self.listWidget_conds.setMaximumSize(QSize(570, 72))
         font1 = QFont()
         font1.setPointSize(10)
         font1.setBold(True)
-        self.title_cond.setFont(font1)
-        self.label_target_table = QLabel(self.centralwidget)
-        self.label_target_table.setObjectName(u"label_target_table")
-        self.label_target_table.setGeometry(QRect(20, 40, 101, 21))
-        self.label_target_table.setFont(font1)
-        self.label_target_table.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cmb_table_name = QComboBox(self.centralwidget)
-        self.cmb_table_name.setObjectName(u"cmb_table_name")
-        self.cmb_table_name.setGeometry(QRect(120, 40, 161, 21))
+        self.listWidget_conds.setFont(font1)
+        self.listWidget_conds.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+        self.gridLayout.addWidget(self.listWidget_conds, 3, 1, 1, 4)
+
+        self.cmb_column_name = QComboBox(self.widget)
+        self.cmb_column_name.setObjectName(u"cmb_column_name")
+        self.cmb_column_name.setMinimumSize(QSize(160, 21))
+        self.cmb_column_name.setMaximumSize(QSize(160, 21))
         font2 = QFont()
         font2.setPointSize(10)
-        self.cmb_table_name.setFont(font2)
-        self.cmb_table_name.setEditable(True)
-        self.label_condition_rules = QLabel(self.centralwidget)
-        self.label_condition_rules.setObjectName(u"label_condition_rules")
-        self.label_condition_rules.setGeometry(QRect(20, 70, 101, 21))
-        self.label_condition_rules.setFont(font1)
-        self.label_condition_rules.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cmb_column_name = QComboBox(self.centralwidget)
-        self.cmb_column_name.setObjectName(u"cmb_column_name")
-        self.cmb_column_name.setGeometry(QRect(120, 70, 160, 21))
         self.cmb_column_name.setFont(font2)
-        self.cmb_operator = QComboBox(self.centralwidget)
-        self.cmb_operator.setObjectName(u"cmb_operator")
-        self.cmb_operator.setGeometry(QRect(290, 70, 110, 21))
-        self.cmb_operator.setFont(font2)
-        self.text_cond_value = QTextEdit(self.centralwidget)
+
+        self.gridLayout.addWidget(self.cmb_column_name, 2, 1, 1, 1)
+
+        self.text_cond_value = QTextEdit(self.widget)
         self.text_cond_value.setObjectName(u"text_cond_value")
-        self.text_cond_value.setGeometry(QRect(410, 70, 191, 21))
+        self.text_cond_value.setMinimumSize(QSize(194, 21))
+        self.text_cond_value.setMaximumSize(QSize(194, 21))
         self.text_cond_value.setFont(font2)
         self.text_cond_value.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.btn_add_cond = QPushButton(self.centralwidget)
+
+        self.gridLayout.addWidget(self.text_cond_value, 2, 3, 1, 1)
+
+        self.btn_add_cond = QPushButton(self.widget)
         self.btn_add_cond.setObjectName(u"btn_add_cond")
-        self.btn_add_cond.setGeometry(QRect(710, 70, 50, 21))
+        self.btn_add_cond.setMinimumSize(QSize(50, 21))
+        self.btn_add_cond.setMaximumSize(QSize(50, 21))
         self.btn_add_cond.setStyleSheet(u"QPushButton { background-color: #2563eb; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #1d4ed8; }\n"
 "")
-        self.label_current_conditions = QLabel(self.centralwidget)
+
+        self.gridLayout.addWidget(self.btn_add_cond, 2, 5, 1, 1)
+
+        self.cmb_join_type = QComboBox(self.widget)
+        self.cmb_join_type.setObjectName(u"cmb_join_type")
+        self.cmb_join_type.setMinimumSize(QSize(98, 21))
+        self.cmb_join_type.setMaximumSize(QSize(98, 21))
+
+        self.gridLayout.addWidget(self.cmb_join_type, 2, 4, 1, 1)
+
+        self.label_current_conditions = QLabel(self.widget)
         self.label_current_conditions.setObjectName(u"label_current_conditions")
-        self.label_current_conditions.setGeometry(QRect(20, 100, 101, 71))
+        self.label_current_conditions.setMinimumSize(QSize(101, 71))
+        self.label_current_conditions.setMaximumSize(QSize(100, 71))
         self.label_current_conditions.setFont(font1)
         self.label_current_conditions.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.listWidget_conds = QListWidget(self.centralwidget)
-        self.listWidget_conds.setObjectName(u"listWidget_conds")
-        self.listWidget_conds.setGeometry(QRect(120, 100, 581, 71))
-        self.listWidget_conds.setFont(font2)
-        self.btn_del_cond = QPushButton(self.centralwidget)
+
+        self.gridLayout.addWidget(self.label_current_conditions, 3, 0, 1, 1)
+
+        self.title_cond = QLabel(self.widget)
+        self.title_cond.setObjectName(u"title_cond")
+        self.title_cond.setFont(font1)
+
+        self.gridLayout.addWidget(self.title_cond, 0, 0, 1, 1)
+
+        self.cmb_table_name = QComboBox(self.widget)
+        self.cmb_table_name.setObjectName(u"cmb_table_name")
+        self.cmb_table_name.setMinimumSize(QSize(160, 21))
+        self.cmb_table_name.setMaximumSize(QSize(160, 21))
+        self.cmb_table_name.setFont(font2)
+        self.cmb_table_name.setEditable(True)
+
+        self.gridLayout.addWidget(self.cmb_table_name, 1, 1, 1, 1)
+
+        self.label_condition_rules = QLabel(self.widget)
+        self.label_condition_rules.setObjectName(u"label_condition_rules")
+        self.label_condition_rules.setMinimumSize(QSize(101, 21))
+        self.label_condition_rules.setMaximumSize(QSize(100, 21))
+        self.label_condition_rules.setFont(font1)
+        self.label_condition_rules.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout.addWidget(self.label_condition_rules, 2, 0, 1, 1)
+
+        self.label_target_table = QLabel(self.widget)
+        self.label_target_table.setObjectName(u"label_target_table")
+        self.label_target_table.setMinimumSize(QSize(100, 21))
+        self.label_target_table.setMaximumSize(QSize(101, 21))
+        self.label_target_table.setFont(font1)
+        self.label_target_table.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout.addWidget(self.label_target_table, 1, 0, 1, 1)
+
+        self.cmb_operator = QComboBox(self.widget)
+        self.cmb_operator.setObjectName(u"cmb_operator")
+        self.cmb_operator.setMinimumSize(QSize(110, 21))
+        self.cmb_operator.setMaximumSize(QSize(110, 21))
+        self.cmb_operator.setFont(font2)
+
+        self.gridLayout.addWidget(self.cmb_operator, 2, 2, 1, 1)
+
+        self.btn_del_cond = QPushButton(self.widget)
         self.btn_del_cond.setObjectName(u"btn_del_cond")
-        self.btn_del_cond.setGeometry(QRect(710, 100, 50, 21))
+        self.btn_del_cond.setMinimumSize(QSize(50, 21))
+        self.btn_del_cond.setMaximumSize(QSize(50, 21))
         self.btn_del_cond.setStyleSheet(u"QPushButton { background-color: #dc2626; color: #ffffff !important; border-radius: 4px; font-weight: bold; } QPushButton:hover { background-color: #b91c1c; }\n"
 "")
+
+        self.gridLayout.addWidget(self.btn_del_cond, 3, 5, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.widget)
+
         self.title_result = QLabel(self.centralwidget)
         self.title_result.setObjectName(u"title_result")
-        self.title_result.setGeometry(QRect(30, 200, 81, 16))
+        self.title_result.setMaximumSize(QSize(101, 16777215))
         self.title_result.setFont(font1)
+
+        self.verticalLayout.addWidget(self.title_result)
+
         self.tableWidget = QTableWidget(self.centralwidget)
         self.tableWidget.setObjectName(u"tableWidget")
-        self.tableWidget.setGeometry(QRect(20, 224, 931, 361))
         self.tableWidget.setFont(font2)
         self.tableWidget.setStyleSheet(u"QTableWidget {\n"
 "    background-color: #ffffff;\n"
-"    gridline-color: #475569;\n"
-"    border: 1px solid #475569;\n"
+"    gridline-color: #94a3b8;\n"
+"    border: 1px solid #94a3b8;\n"
 "    padding: 1px;\n"
 "    border-radius: 4px;\n"
 "}\n"
@@ -292,72 +365,155 @@ class Ui_MainWindow(object):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableWidget.verticalHeader().setMinimumSectionSize(20)
         self.tableWidget.verticalHeader().setDefaultSectionSize(20)
-        self.frame_btn = QFrame(self.centralwidget)
-        self.frame_btn.setObjectName(u"frame_btn")
-        self.frame_btn.setGeometry(QRect(20, 590, 931, 51))
-        self.frame_btn.setStyleSheet(u"")
-        self.btn_back = QPushButton(self.frame_btn)
-        self.btn_back.setObjectName(u"btn_back")
-        self.btn_back.setGeometry(QRect(10, 10, 51, 31))
-        self.btn_back.setStyleSheet(u"QPushButton { background-color: #e2e8f0; color: #475569 !important; border: 1px solid #475569; border-radius: 6px; font-weight: bold; } QPushButton:hover { background-color: #cbd5e1; }")
-        self.btn_exe_csv = QPushButton(self.frame_btn)
-        self.btn_exe_csv.setObjectName(u"btn_exe_csv")
-        self.btn_exe_csv.setGeometry(QRect(580, 10, 51, 31))
-        self.btn_exe_csv.setStyleSheet(u"")
-        self.btn_exe_inquiry = QPushButton(self.frame_btn)
-        self.btn_exe_inquiry.setObjectName(u"btn_exe_inquiry")
-        self.btn_exe_inquiry.setGeometry(QRect(460, 10, 51, 31))
-        self.btn_exe_inquiry.setStyleSheet(u"")
-        self.btn_clear = QPushButton(self.frame_btn)
-        self.btn_clear.setObjectName(u"btn_clear")
-        self.btn_clear.setGeometry(QRect(520, 10, 51, 31))
-        self.btn_clear.setStyleSheet(u"")
-        self.btn_dummy_1 = QPushButton(self.frame_btn)
-        self.btn_dummy_1.setObjectName(u"btn_dummy_1")
-        self.btn_dummy_1.setGeometry(QRect(100, 10, 51, 31))
-        self.btn_dummy_1.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_dummy_1.setStyleSheet(u"")
-        self.btn_dummy_2 = QPushButton(self.frame_btn)
-        self.btn_dummy_2.setObjectName(u"btn_dummy_2")
-        self.btn_dummy_2.setGeometry(QRect(160, 10, 51, 31))
-        self.btn_dummy_2.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_dummy_2.setStyleSheet(u"")
-        self.btn_dummy_3 = QPushButton(self.frame_btn)
-        self.btn_dummy_3.setObjectName(u"btn_dummy_3")
-        self.btn_dummy_3.setGeometry(QRect(220, 10, 51, 31))
-        self.btn_dummy_3.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_dummy_3.setStyleSheet(u"")
-        self.btn_dummy_4 = QPushButton(self.frame_btn)
-        self.btn_dummy_4.setObjectName(u"btn_dummy_4")
-        self.btn_dummy_4.setGeometry(QRect(280, 10, 51, 31))
-        self.btn_dummy_4.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_dummy_4.setStyleSheet(u"")
-        self.btn_dummy_5 = QPushButton(self.frame_btn)
-        self.btn_dummy_5.setObjectName(u"btn_dummy_5")
-        self.btn_dummy_5.setGeometry(QRect(340, 10, 51, 31))
-        self.btn_dummy_5.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_dummy_5.setStyleSheet(u"")
-        self.btn_dummy_6 = QPushButton(self.frame_btn)
-        self.btn_dummy_6.setObjectName(u"btn_dummy_6")
-        self.btn_dummy_6.setGeometry(QRect(400, 10, 51, 31))
-        self.btn_dummy_6.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_dummy_6.setStyleSheet(u"")
-        self.cmb_join_type = QComboBox(self.centralwidget)
-        self.cmb_join_type.setObjectName(u"cmb_join_type")
-        self.cmb_join_type.setGeometry(QRect(610, 70, 89, 21))
+
+        self.verticalLayout.addWidget(self.tableWidget)
+
         self.word_count = QLabel(self.centralwidget)
         self.word_count.setObjectName(u"word_count")
-        self.word_count.setGeometry(QRect(110, 200, 71, 16))
+        self.word_count.setMaximumSize(QSize(101, 16777215))
         self.word_count.setFont(font1)
-        self.word_count.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.word_count.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+
+        self.verticalLayout.addWidget(self.word_count)
+
+        self.frame_btn = QFrame(self.centralwidget)
+        self.frame_btn.setObjectName(u"frame_btn")
+        self.frame_btn.setMinimumSize(QSize(622, 51))
+        self.frame_btn.setMaximumSize(QSize(622, 51))
+        self.frame_btn.setStyleSheet(u"")
+        self.horizontalLayout = QHBoxLayout(self.frame_btn)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.btn_back = QPushButton(self.frame_btn)
+        self.btn_back.setObjectName(u"btn_back")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_back.sizePolicy().hasHeightForWidth())
+        self.btn_back.setSizePolicy(sizePolicy)
+        self.btn_back.setMinimumSize(QSize(51, 31))
+        self.btn_back.setMaximumSize(QSize(51, 31))
+        self.btn_back.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_back)
+
+        self.btn_dummy_1 = QPushButton(self.frame_btn)
+        self.btn_dummy_1.setObjectName(u"btn_dummy_1")
+        sizePolicy.setHeightForWidth(self.btn_dummy_1.sizePolicy().hasHeightForWidth())
+        self.btn_dummy_1.setSizePolicy(sizePolicy)
+        self.btn_dummy_1.setMinimumSize(QSize(51, 31))
+        self.btn_dummy_1.setMaximumSize(QSize(51, 31))
+        self.btn_dummy_1.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_dummy_1.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_dummy_1)
+
+        self.btn_dummy_2 = QPushButton(self.frame_btn)
+        self.btn_dummy_2.setObjectName(u"btn_dummy_2")
+        sizePolicy.setHeightForWidth(self.btn_dummy_2.sizePolicy().hasHeightForWidth())
+        self.btn_dummy_2.setSizePolicy(sizePolicy)
+        self.btn_dummy_2.setMinimumSize(QSize(51, 31))
+        self.btn_dummy_2.setMaximumSize(QSize(51, 31))
+        self.btn_dummy_2.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_dummy_2.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_dummy_2)
+
+        self.btn_dummy_3 = QPushButton(self.frame_btn)
+        self.btn_dummy_3.setObjectName(u"btn_dummy_3")
+        sizePolicy.setHeightForWidth(self.btn_dummy_3.sizePolicy().hasHeightForWidth())
+        self.btn_dummy_3.setSizePolicy(sizePolicy)
+        self.btn_dummy_3.setMinimumSize(QSize(51, 31))
+        self.btn_dummy_3.setMaximumSize(QSize(51, 31))
+        self.btn_dummy_3.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_dummy_3.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_dummy_3)
+
+        self.btn_dummy_4 = QPushButton(self.frame_btn)
+        self.btn_dummy_4.setObjectName(u"btn_dummy_4")
+        sizePolicy.setHeightForWidth(self.btn_dummy_4.sizePolicy().hasHeightForWidth())
+        self.btn_dummy_4.setSizePolicy(sizePolicy)
+        self.btn_dummy_4.setMinimumSize(QSize(51, 31))
+        self.btn_dummy_4.setMaximumSize(QSize(51, 31))
+        self.btn_dummy_4.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_dummy_4.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_dummy_4)
+
+        self.btn_dummy_5 = QPushButton(self.frame_btn)
+        self.btn_dummy_5.setObjectName(u"btn_dummy_5")
+        sizePolicy.setHeightForWidth(self.btn_dummy_5.sizePolicy().hasHeightForWidth())
+        self.btn_dummy_5.setSizePolicy(sizePolicy)
+        self.btn_dummy_5.setMinimumSize(QSize(51, 31))
+        self.btn_dummy_5.setMaximumSize(QSize(51, 31))
+        self.btn_dummy_5.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_dummy_5.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_dummy_5)
+
+        self.btn_dummy_6 = QPushButton(self.frame_btn)
+        self.btn_dummy_6.setObjectName(u"btn_dummy_6")
+        sizePolicy.setHeightForWidth(self.btn_dummy_6.sizePolicy().hasHeightForWidth())
+        self.btn_dummy_6.setSizePolicy(sizePolicy)
+        self.btn_dummy_6.setMinimumSize(QSize(51, 31))
+        self.btn_dummy_6.setMaximumSize(QSize(51, 31))
+        self.btn_dummy_6.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_dummy_6.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_dummy_6)
+
+        self.btn_exe_inquiry = QPushButton(self.frame_btn)
+        self.btn_exe_inquiry.setObjectName(u"btn_exe_inquiry")
+        sizePolicy.setHeightForWidth(self.btn_exe_inquiry.sizePolicy().hasHeightForWidth())
+        self.btn_exe_inquiry.setSizePolicy(sizePolicy)
+        self.btn_exe_inquiry.setMinimumSize(QSize(51, 31))
+        self.btn_exe_inquiry.setMaximumSize(QSize(51, 31))
+        self.btn_exe_inquiry.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_exe_inquiry)
+
+        self.btn_clear = QPushButton(self.frame_btn)
+        self.btn_clear.setObjectName(u"btn_clear")
+        sizePolicy.setHeightForWidth(self.btn_clear.sizePolicy().hasHeightForWidth())
+        self.btn_clear.setSizePolicy(sizePolicy)
+        self.btn_clear.setMinimumSize(QSize(51, 31))
+        self.btn_clear.setMaximumSize(QSize(51, 31))
+        self.btn_clear.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_clear)
+
+        self.btn_exe_csv = QPushButton(self.frame_btn)
+        self.btn_exe_csv.setObjectName(u"btn_exe_csv")
+        sizePolicy.setHeightForWidth(self.btn_exe_csv.sizePolicy().hasHeightForWidth())
+        self.btn_exe_csv.setSizePolicy(sizePolicy)
+        self.btn_exe_csv.setMinimumSize(QSize(51, 31))
+        self.btn_exe_csv.setMaximumSize(QSize(51, 31))
+        self.btn_exe_csv.setStyleSheet(u"")
+
+        self.horizontalLayout.addWidget(self.btn_exe_csv)
+
+
+        self.verticalLayout.addWidget(self.frame_btn)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 968, 33))
+        self.menubar.setGeometry(QRect(0, 0, 969, 33))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        QWidget.setTabOrder(self.cmb_table_name, self.cmb_column_name)
+        QWidget.setTabOrder(self.cmb_column_name, self.cmb_operator)
+        QWidget.setTabOrder(self.cmb_operator, self.text_cond_value)
+        QWidget.setTabOrder(self.text_cond_value, self.cmb_join_type)
+        QWidget.setTabOrder(self.cmb_join_type, self.btn_add_cond)
+        QWidget.setTabOrder(self.btn_add_cond, self.btn_del_cond)
+        QWidget.setTabOrder(self.btn_del_cond, self.tableWidget)
+        QWidget.setTabOrder(self.tableWidget, self.btn_back)
+        QWidget.setTabOrder(self.btn_back, self.btn_exe_inquiry)
+        QWidget.setTabOrder(self.btn_exe_inquiry, self.btn_clear)
+        QWidget.setTabOrder(self.btn_clear, self.btn_exe_csv)
 
         self.retranslateUi(MainWindow)
 
@@ -366,24 +522,24 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u6c4e\u7528\u691c\u7d22", None))
-        self.title_cond.setText(QCoreApplication.translate("MainWindow", u"\uff1c\u6761\u4ef6\u8a2d\u5b9a\uff1e", None))
-        self.label_target_table.setText(QCoreApplication.translate("MainWindow", u"\u5bfe\u8c61\u30c6\u30fc\u30d6\u30eb", None))
-        self.label_condition_rules.setText(QCoreApplication.translate("MainWindow", u"\u6761\u4ef6\u306e\u898f\u5247", None))
         self.text_cond_value.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u5024\u3092\u5165\u529b", None))
         self.btn_add_cond.setText(QCoreApplication.translate("MainWindow", u"\u8ffd\u52a0", None))
         self.label_current_conditions.setText(QCoreApplication.translate("MainWindow", u"\u73fe\u5728\u306e\u6761\u4ef6", None))
+        self.title_cond.setText(QCoreApplication.translate("MainWindow", u"\uff1c\u6761\u4ef6\u8a2d\u5b9a\uff1e", None))
+        self.label_condition_rules.setText(QCoreApplication.translate("MainWindow", u"\u6761\u4ef6\u306e\u898f\u5247", None))
+        self.label_target_table.setText(QCoreApplication.translate("MainWindow", u"\u5bfe\u8c61\u30c6\u30fc\u30d6\u30eb", None))
         self.btn_del_cond.setText(QCoreApplication.translate("MainWindow", u"\u524a\u9664", None))
         self.title_result.setText(QCoreApplication.translate("MainWindow", u"\uff1c\u7167\u4f1a\u7d50\u679c\uff1e", None))
+        self.word_count.setText("")
         self.btn_back.setText(QCoreApplication.translate("MainWindow", u"\u623b\u308b", None))
-        self.btn_exe_csv.setText(QCoreApplication.translate("MainWindow", u"CSV", None))
-        self.btn_exe_inquiry.setText(QCoreApplication.translate("MainWindow", u"\u7167\u4f1a", None))
-        self.btn_clear.setText(QCoreApplication.translate("MainWindow", u"\u30af\u30ea\u30a2", None))
         self.btn_dummy_1.setText("")
         self.btn_dummy_2.setText("")
         self.btn_dummy_3.setText("")
         self.btn_dummy_4.setText("")
         self.btn_dummy_5.setText("")
         self.btn_dummy_6.setText("")
-        self.word_count.setText("")
+        self.btn_exe_inquiry.setText(QCoreApplication.translate("MainWindow", u"\u7167\u4f1a", None))
+        self.btn_clear.setText(QCoreApplication.translate("MainWindow", u"\u30af\u30ea\u30a2", None))
+        self.btn_exe_csv.setText(QCoreApplication.translate("MainWindow", u"CSV", None))
     # retranslateUi
 
