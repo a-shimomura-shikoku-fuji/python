@@ -5,20 +5,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime import datetime
 import pandas as pd
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QMessageBox, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QMessageBox, QTableWidgetItem,QMainWindow
 from PySide6.QtUiTools import loadUiType
+from ui_files.app_general_search_ui import Ui_MainWindow
 
 # 共通ユーティリティのインポート
 import common_utils
 
 # Pythonに古い一時ファイル（.pyc）を作らせない設定
 sys.dont_write_bytecode = True
-
-# UIファイルをロード
-current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
-ui_main_path = os.path.join(root_dir, "ui_files", "app_general_search.ui")
-Ui_MainWindow, QMainWindowBase = loadUiType(ui_main_path)
 
 # --- 汎用検索画面の定数定義 ---
 MAX_ROWS = 10000  # 最大取得件数制限
@@ -34,7 +29,7 @@ OPERATORS = {
 }
 
 
-class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
+class GeneralSearchWindow(QMainWindow, Ui_MainWindow):
     """データベース汎用複数条件検索画面 ウィンドウ管理クラス"""
 
     def __init__(self, parent_menu=None):
@@ -61,11 +56,14 @@ class GeneralSearchWindow(QMainWindowBase, Ui_MainWindow):
         if hasattr(self, "cmb_operator"):
             self.cmb_operator.addItems(list(OPERATORS.keys()))
 
+        if hasattr(self, "text_cond_value"):
+            self.text_cond_value.setTabChangesFocus(True)
+
         # 【OR条件用の選択肢拡張】
         if hasattr(self, "cmb_join_type"):
             self.cmb_join_type.clear()
             self.cmb_join_type.addItems(["AND (かつ)", "OR (または)"])
-
+        
         if hasattr(self, "cmb_table_name"):
             self.cmb_table_name.setFocus()
 
